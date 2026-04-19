@@ -1,0 +1,83 @@
+# CeylonTourMate — Local Development Docker Compose
+# Usage: docker compose up -d
+
+version: '3.9'
+
+services:
+  # ─── MongoDB ───
+  mongodb:
+    image: mongo:7
+    container_name: ceylontourmate-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ceylontourmate
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis ───
+  redis:
+    image: redis:7-alpine
+    container_name: ceylontourmate-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Node.js Backend API ───
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ceylontourmate-api
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb:27017/ceylontourmate
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ceylontourmate-dev-secret
+      AI_SERVICE_URL: http://ai-service:8000
+      CORS_ORIGIN: "*"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src  # Hot reload in development
+    command: npm run dev
+
+  # ─── Python FastAPI AI Service ───
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: ceylontourmate-ai
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
+      MONGODB_URI: mongodb://mongodb:27017/ceylontourmate
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./ai-service/app:/app/app  # Hot reload in development
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  mongodb_data:
+  redis_data:

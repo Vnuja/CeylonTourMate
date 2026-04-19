@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Expo
+mobile/.expo/
+mobile/dist/
+
+# Build artifacts
+*.tsbuildinfo
+coverage/
+
+# Docker
+docker-compose.override.yml
+
+# ML models (too large for git)
+ai-service/models/*.h5
+ai-service/models/*.pb
+ai-service/models/*.pt

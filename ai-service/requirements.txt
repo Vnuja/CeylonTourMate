@@ -1,0 +1,16 @@
+# CeylonTourMate — AI Service Requirements (placeholder)
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+python-multipart==0.0.6
+httpx==0.26.0
+pymongo==4.6.1
+Pillow==10.2.0
+numpy==1.26.3
+# Future ML dependencies (uncomment when implementing):
+# tensorflow==2.15.0
+# scikit-learn==1.4.0
+# paddleocr==2.7.3
+# transformers==4.37.2
+# torch==2.1.2
+# open-clip-torch==2.24.0
