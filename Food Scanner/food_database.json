@@ -1,0 +1,88 @@
+{
+  "Kottu Roti": {
+    "description": "Kottu Roti is one of Sri Lanka's most popular street foods, made by chopping up godamba roti on a hot griddle with vegetables, egg and spices. The rhythmic chopping sound is iconic in Sri Lankan streets.",
+    "ingredients": ["godamba roti", "egg", "leeks", "carrot", "onion", "green chili", "curry leaves", "spices", "oil"],
+    "allergens": ["Gluten", "Egg"],
+    "dietary": "Not vegan, contains gluten and egg",
+    "how_to_eat": "Eat hot with a spoon or fork. Usually served with a small cup of curry sauce on the side. Mix the sauce into the kottu before eating for extra flavor.",
+    "how_to_make": "Shred godamba roti into small pieces. Stir fry on a hot griddle with oil, onion, leeks and chili. Add beaten egg and mix well. Season with curry powder and salt. Serve hot with curry sauce."
+  },
+  "Kiribath": {
+    "description": "Kiribath means milk rice in Sinhala. It is a traditional Sri Lankan dish made by cooking rice in thick coconut milk until creamy. It is eaten on special occasions like New Year and birthdays.",
+    "ingredients": ["rice", "coconut milk", "salt"],
+    "allergens": [],
+    "dietary": "Vegan, gluten-free, dairy-free",
+    "how_to_eat": "Cut into diamond shapes and eat with lunu miris (spicy onion sambol) or jaggery (palm sugar). Use your hand or a fork. Best enjoyed fresh and warm.",
+    "how_to_make": "Cook rice with water until half done. Add thick coconut milk and salt. Cook on low heat until creamy and thick. Pour into a flat dish and cut into diamond shapes when cooled."
+  },
+  "Pol Sambol": {
+    "description": "Pol Sambol is a classic Sri Lankan coconut relish served as a side dish with almost every meal. Made from freshly grated coconut mixed with chili and lime, it adds a spicy kick to any dish.",
+    "ingredients": ["fresh grated coconut", "red chili flakes", "onion", "lime juice", "salt", "maldive fish"],
+    "allergens": ["Fish"],
+    "dietary": "Contains fish, gluten-free",
+    "how_to_eat": "Eat as a side dish with rice, string hoppers, hoppers or bread. Take a small amount and mix with your main dish. Very spicy so use small amounts if you are not used to spicy food.",
+    "how_to_make": "Grind red chili, onion and maldive fish together. Mix with freshly grated coconut. Add lime juice and salt to taste. Mix well by hand until all ingredients are combined."
+  },
+  "String Hoppers": {
+    "description": "String Hoppers are delicate steamed rice noodle nests, a traditional Sri Lankan breakfast food. They are light, soft and slightly chewy, made by pressing rice flour dough through a mold.",
+    "ingredients": ["rice flour", "water", "salt"],
+    "allergens": [],
+    "dietary": "Vegan, gluten-free",
+    "how_to_eat": "Eat with coconut milk, dhal curry or pol sambol. Break the noodle nest apart with your fingers or fork and dip into curry. Best eaten fresh while still warm.",
+    "how_to_make": "Mix rice flour with hot water and salt to make a soft dough. Press through a string hopper mold onto small wicker mats. Steam for 5 to 8 minutes until cooked. Serve immediately."
+  },
+  "Hoppers": {
+    "description": "Hoppers are thin crispy bowl shaped pancakes made from fermented rice batter and coconut milk. They are a beloved Sri Lankan breakfast food with a crispy edge and soft center.",
+    "ingredients": ["rice flour", "coconut milk", "yeast", "sugar", "salt"],
+    "allergens": [],
+    "dietary": "Vegan, gluten-free",
+    "how_to_eat": "Eat with pol sambol, dhal curry or seeni sambol. Break off pieces from the crispy edge and scoop up the curry. Egg hoppers have an egg cooked in the center and are eaten the same way.",
+    "how_to_make": "Mix rice flour with coconut milk, yeast and sugar. Allow to ferment overnight. Pour batter into a small wok shaped pan and swirl to coat the sides. Cover and cook until edges are crispy and center is soft."
+  },
+  "Pittu": {
+    "description": "Pittu is a traditional Sri Lankan steamed food made from layers of rice flour and grated coconut packed into a cylindrical mold. It is a popular breakfast food in Sri Lanka and South India.",
+    "ingredients": ["rice flour", "grated coconut", "salt", "water"],
+    "allergens": [],
+    "dietary": "Vegan, gluten-free",
+    "how_to_eat": "Break apart and eat with coconut milk and sugar for a sweet breakfast, or with dhal curry and pol sambol for a savory meal. Pour coconut milk over the pittu and mix before eating.",
+    "how_to_make": "Mix rice flour with salt and a little water until crumbly. Layer rice flour mixture and grated coconut alternately into a cylindrical bamboo or metal mold. Steam for 10 to 15 minutes until cooked."
+  },
+  "Dhal Curry": {
+    "description": "Dhal Curry is a creamy Sri Lankan lentil curry made with red lentils and coconut milk. It is one of the most common side dishes in Sri Lanka, eaten daily in most households.",
+    "ingredients": ["red lentils", "coconut milk", "onion", "tomato", "turmeric", "mustard seeds", "curry leaves", "green chili"],
+    "allergens": [],
+    "dietary": "Vegan, gluten-free",
+    "how_to_eat": "Pour over rice or eat with string hoppers, pittu or bread. Mix well with rice before eating. Can also be eaten as a soup by itself. Best enjoyed hot.",
+    "how_to_make": "Boil red lentils with turmeric until soft. In a separate pan fry mustard seeds, curry leaves, onion and green chili. Add tomato and cook until soft. Combine with lentils and add coconut milk. Simmer until creamy."
+  },
+  "Katta Sambol": {
+    "description": "Katta Sambol is a very spicy Sri Lankan relish made with red chili and onion. It is much hotter than Pol Sambol and is a favorite condiment for those who love spicy food.",
+    "ingredients": ["red onion", "red chili", "lime juice", "salt", "maldive fish"],
+    "allergens": ["Fish"],
+    "dietary": "Contains fish, gluten-free",
+    "how_to_eat": "Use very small amounts as it is extremely spicy. Eat as a side condiment with rice, hoppers or bread. Mix a tiny amount into your main dish for extra heat and flavor.",
+    "how_to_make": "Finely slice red onion and red chili. Mix together with maldive fish flakes. Add lime juice and salt. Mix well by hand. Adjust chili and lime to taste. Serve fresh."
+  },
+  "Kawum": {
+    "description": "Kawum is a traditional Sri Lankan oil cake made during festive occasions especially Sinhala and Tamil New Year. It is sweet, oily and has a distinctive diamond or circular shape.",
+    "ingredients": ["rice flour", "coconut treacle", "coconut oil", "turmeric", "sesame seeds"],
+    "allergens": [],
+    "dietary": "Vegan, gluten-free",
+    "how_to_eat": "Eat as a sweet snack at any time of day. No utensils needed, just pick up and eat. Best enjoyed at room temperature. Often eaten with other traditional sweets during New Year celebrations.",
+    "how_to_make": "Mix rice flour with coconut treacle and turmeric to make a thick batter. Heat coconut oil in a deep pan. Pour batter through a special mold into the hot oil. Fry until golden brown and crispy. Drain and cool."
+  },
+  "Kokis": {
+    "description": "Kokis is a traditional crispy Sri Lankan snack made during New Year celebrations. It has a beautiful flower or snowflake shape and a satisfying crunch, originally brought to Sri Lanka by Dutch colonists.",
+    "ingredients": ["rice flour", "coconut milk", "egg", "salt", "oil", "turmeric"],
+    "allergens": ["Egg"],
+    "dietary": "Vegetarian, gluten-free, contains egg",
+    "how_to_eat": "Eat as a crunchy snack at any time. Pick up and eat directly, no utensils needed. Best enjoyed fresh when still crispy. Often eaten during Sri Lankan New Year celebrations with family.",
+    "how_to_make": "Mix rice flour with coconut milk, egg, salt and turmeric to make a smooth batter. Heat oil in a deep pan. Dip a special kokis mold into hot oil then into batter then back into oil. Fry until golden and crispy."
+  },
+  "Fried Rice": {
+    "description": "Sri Lankan Fried Rice is a flavorful stir fried rice dish cooked with vegetables, egg and aromatic spices. It is a popular lunch and dinner option available in most Sri Lankan restaurants.",
+    "ingredients": ["rice", "egg", "carrot", "leeks", "cabbage", "soy sauce", "spices", "oil"],
+    "allergens": ["Egg", "Soy"],
+    "dietary": "Contains egg and soy, not vegan"
+  }
+}

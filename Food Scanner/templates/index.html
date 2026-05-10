@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CeylonTourMate - Food Scanner</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; min-height: 100vh; }
+
+    .header { background: #1a1a2e; color: white; padding: 16px 24px;
+              display: flex; align-items: center; gap: 12px; }
+    .header-dot { width: 10px; height: 10px; background: #16c79a; border-radius: 50%; }
+    .app-name { font-size: 20px; font-weight: 600; }
+    .app-sub { font-size: 11px; color: #16c79a; margin-top: 2px; }
+
+    .container { max-width: 650px; margin: 30px auto; padding: 0 16px; }
+
+    .card { background: white; border-radius: 16px; padding: 24px;
+            border: 1px solid #e8ecf0; margin-bottom: 16px; }
+
+    .upload-area { border: 2px dashed #16c79a44; border-radius: 12px;
+                   padding: 40px 20px; text-align: center; cursor: pointer;
+                   transition: all 0.2s; background: #f8fffe; }
+    .upload-area:hover { border-color: #16c79a; background: #f0fff9; }
+    .upload-area.has-image { border-style: solid; border-color: #16c79a;
+                              padding: 0; overflow: hidden; }
+    .upload-icon { font-size: 40px; margin-bottom: 10px; }
+    .upload-text { color: #888; font-size: 14px; }
+    .upload-sub { color: #16c79a; font-size: 12px; margin-top: 6px; }
+    #preview { width: 100%; max-height: 280px; object-fit: cover;
+               border-radius: 10px; display: none; }
+
+    .btn { width: 100%; background: #1a1a2e; color: white; border: none;
+           border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 500;
+           cursor: pointer; margin-top: 12px; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .steps { display: flex; gap: 8px; margin: 16px 0; }
+    .step { flex: 1; padding: 10px 8px; border-radius: 8px; text-align: center;
+            background: #f7f8fa; border: 1px solid #e8ecf0; font-size: 11px;
+            color: #aaa; transition: all 0.3s; }
+    .step.active { background: #16c79a11; border-color: #16c79a;
+                   color: #0f6e56; font-weight: 500; }
+    .step.done { background: #16c79a; color: white; border-color: #16c79a; }
+    .step-num { font-size: 16px; margin-bottom: 4px; }
+
+    .result { display: none; }
+    .result.show { display: block; }
+
+    .combined-desc { font-size: 14px; color: #444; line-height: 1.8;
+                     background: #f8fffe; border-radius: 12px; padding: 16px;
+                     border-left: 3px solid #16c79a; margin-bottom: 20px; }
+
+    .foods-grid { display: grid; gap: 16px; }
+
+    .food-card { background: white; border-radius: 16px;
+                 border: 1px solid #e8ecf0; overflow: hidden;
+                 transition: transform 0.2s; }
+    .food-card:hover { transform: translateY(-2px); }
+
+    .food-card-image { width: 100%; height: 180px; object-fit: cover;
+                       background: #f0f4f8; }
+    .food-card-image-placeholder { width: 100%; height: 180px;
+                                    background: #1a1a2e;
+                                    display: flex; align-items: center;
+                                    justify-content: center; font-size: 48px; }
+    .food-card-body { padding: 16px; }
+    .food-card-name { font-size: 18px; font-weight: 600; color: #1a1a2e;
+                      margin-bottom: 8px; }
+
+    .info-row { display: flex; gap: 8px; align-items: flex-start;
+                padding: 8px 0; border-bottom: 1px solid #f0f4f8; }
+    .info-row:last-child { border-bottom: none; }
+    .info-icon { width: 28px; height: 28px; border-radius: 6px; display: flex;
+                 align-items: center; justify-content: center; font-size: 14px;
+                 flex-shrink: 0; margin-top: 1px; }
+    .info-icon.green { background: #16c79a22; }
+    .info-icon.amber { background: #f5a62322; }
+    .info-icon.blue { background: #3498db22; }
+    .info-icon.purple { background: #9b59b622; }
+    .info-icon.red { background: #e2444422; }
+    .info-label { font-size: 10px; color: #aaa; margin-bottom: 2px;
+                  text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-value { font-size: 12px; color: #333; line-height: 1.5; }
+
+    .pill { display: inline-block; font-size: 11px; padding: 3px 10px;
+            border-radius: 20px; margin: 2px; }
+    .pill.danger { background: #e2444411; color: #a32d2d; border: 1px solid #e2444433; }
+    .pill.safe { background: #16c79a11; color: #0f6e56; border: 1px solid #16c79a33; }
+    .pill.neutral { background: #f0f4f8; color: #555; border: 1px solid #e0e4e8; }
+
+    .detected-count { font-size: 13px; color: #666; margin-bottom: 12px; }
+    .detected-count span { color: #16c79a; font-weight: 600; }
+
+    .method-info { font-size: 11px; color: #aaa; margin-top: 8px; }
+
+    .error-box { background: #e2444411; border: 1px solid #e2444433;
+                 border-radius: 10px; padding: 14px; color: #a32d2d;
+                 font-size: 13px; display: none; }
+    .error-box.show { display: block; }
+
+    .flow-diagram { background: #f7f8fa; border-radius: 10px; padding: 12px;
+                    font-size: 11px; color: #666; text-align: center;
+                    margin-bottom: 16px; }
+    .flow-step { display: inline-block; background: white; border: 1px solid #e8ecf0;
+                 border-radius: 6px; padding: 3px 8px; margin: 2px; }
+    .flow-arrow { color: #16c79a; font-weight: bold; margin: 0 3px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-dot"></div>
+  <div>
+    <div class="app-name">CeylonTourMate</div>
+    <div class="app-sub">Food Scanner — CNN + LLaVA + RAG + LLaMA 3.2</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <div class="flow-diagram">
+      <span class="flow-step">📷 Photo</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">🧠 CNN</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">🤖 LLaVA detects all foods</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">🗄️ RAG</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">✅ Result</span>
+    </div>
+
+    <div class="upload-area" id="uploadArea"
+         onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">📷</div>
+      <div class="upload-text">Click to upload food photo</div>
+      <div class="upload-sub">Detects multiple foods automatically!</div>
+      <img id="preview" alt="preview">
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*"
+           style="display:none" onchange="handleFile(event)">
+
+    <div class="steps" id="steps">
+      <div class="step" id="s1">
+        <div class="step-num">🧠</div>CNN<br>Analysis
+      </div>
+      <div class="step" id="s2">
+        <div class="step-num">🤖</div>Multi Food<br>Detection
+      </div>
+      <div class="step" id="s3">
+        <div class="step-num">🗄️</div>RAG<br>Search
+      </div>
+      <div class="step" id="s4">
+        <div class="step-num">💬</div>Guide<br>Response
+      </div>
+    </div>
+
+    <button class="btn" id="analyzeBtn" onclick="analyzeFood()" disabled>
+      Scan Food
+    </button>
+    <div class="method-info" id="methodInfo"></div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="result" id="resultSection">
+    <div class="card">
+      <div class="detected-count" id="detectedCount"></div>
+      <div class="combined-desc" id="combinedDesc"></div>
+    </div>
+    <div class="foods-grid" id="foodsGrid"></div>
+  </div>
+
+</div>
+
+<script>
+  let imageBase64 = null;
+
+  function handleFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const fullBase64 = e.target.result;
+      imageBase64 = fullBase64.split(',')[1];
+
+      const preview = document.getElementById('preview');
+      preview.src = fullBase64;
+      preview.style.display = 'block';
+
+      document.getElementById('uploadArea').classList.add('has-image');
+      document.getElementById('analyzeBtn').disabled = false;
+      document.getElementById('resultSection').classList.remove('show');
+      document.getElementById('errorBox').classList.remove('show');
+      resetSteps();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function resetSteps() {
+    ['s1','s2','s3','s4'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.className = 'step';
+    });
+  }
+
+  function setStep(stepId, state) {
+    const el = document.getElementById(stepId);
+    if(el) el.className = 'step ' + state;
+  }
+
+  function buildFoodCard(food) {
+    const allergenHtml = food.allergens.length === 0
+      ? '<span class="pill safe">✓ No allergens</span>'
+      : food.allergens.map(a => `<span class="pill danger">⚠ ${a}</span>`).join('');
+
+    const imageHtml = food.image
+      ? `<img class="food-card-image" src="data:image/jpeg;base64,${food.image}" alt="${food.food_name}">`
+      : `<div class="food-card-image-placeholder">🍽️</div>`;
+
+    const howToEat = food.how_to_eat
+      ? `<div class="info-row">
+          <div class="info-icon green">🍽️</div>
+          <div>
+            <div class="info-label">How to Eat</div>
+            <div class="info-value">${food.how_to_eat}</div>
+          </div>
+        </div>` : '';
+
+    const howToMake = food.how_to_make
+      ? `<div class="info-row">
+          <div class="info-icon purple">👨‍🍳</div>
+          <div>
+            <div class="info-label">How it is Made</div>
+            <div class="info-value">${food.how_to_make}</div>
+          </div>
+        </div>` : '';
+
+    return `
+      <div class="food-card">
+        ${imageHtml}
+        <div class="food-card-body">
+          <div class="food-card-name">${food.food_name}</div>
+
+          <div class="info-row">
+            <div class="info-icon green">🥘</div>
+            <div>
+              <div class="info-label">Ingredients</div>
+              <div class="info-value">${food.ingredients.join(', ')}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon red">⚠️</div>
+            <div>
+              <div class="info-label">Allergy Warnings</div>
+              <div class="info-value">${allergenHtml}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-icon blue">🌿</div>
+            <div>
+              <div class="info-label">Dietary Info</div>
+              <div class="info-value">
+                <span class="pill neutral">${food.dietary}</span>
+              </div>
+            </div>
+          </div>
+
+          ${howToEat}
+          ${howToMake}
+        </div>
+      </div>`;
+  }
+
+  async function analyzeFood() {
+    if (!imageBase64) return;
+
+    const btn = document.getElementById('analyzeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Scanning...';
+    document.getElementById('resultSection').classList.remove('show');
+    document.getElementById('errorBox').classList.remove('show');
+    document.getElementById('foodsGrid').innerHTML = '';
+    resetSteps();
+
+    setStep('s1', 'active');
+    btn.textContent = 'Step 1: CNN analyzing...';
+
+    try {
+      const response = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageBase64 })
+      });
+
+      setStep('s1', 'done');
+      setStep('s2', 'active');
+      btn.textContent = 'Step 2: Detecting all foods...';
+
+      await new Promise(r => setTimeout(r, 500));
+      setStep('s2', 'done');
+      setStep('s3', 'active');
+      btn.textContent = 'Step 3: Searching database...';
+
+      await new Promise(r => setTimeout(r, 500));
+      setStep('s3', 'done');
+      setStep('s4', 'active');
+      btn.textContent = 'Step 4: Generating guide response...';
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      await new Promise(r => setTimeout(r, 500));
+      setStep('s4', 'done');
+
+      // Show detected count
+      document.getElementById('detectedCount').innerHTML =
+        `Detected <span>${data.total_foods} food${data.total_foods > 1 ? 's' : ''}</span> in your photo`;
+
+      // Show combined description
+      document.getElementById('combinedDesc').textContent = data.combined_description;
+
+      // Show method
+      document.getElementById('methodInfo').textContent =
+        'Identified by: ' + data.method_used;
+
+      // Build food cards
+      const grid = document.getElementById('foodsGrid');
+      data.foods.forEach(food => {
+        grid.innerHTML += buildFoodCard(food);
+      });
+
+      document.getElementById('resultSection').classList.add('show');
+
+    } catch (error) {
+      resetSteps();
+      const errorBox = document.getElementById('errorBox');
+      errorBox.textContent = 'Error: ' + error.message +
+        '. Make sure Ollama is running and models are downloaded.';
+      errorBox.classList.add('show');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Scan Food';
+  }
+</script>
+
+</body>
+</html>
