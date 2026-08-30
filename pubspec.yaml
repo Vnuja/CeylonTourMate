@@ -1,0 +1,65 @@
+name: ceylon_travel_planner
+description: "Ceylon Travel Planner — Explore, AI Chat, Albums, Recommendations and a Sinhala Harsh-Word Detector, all in one app."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase (auth + shared realtime data: users, sessions, albums, feedback)
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  firebase_database: ^11.1.4
+
+  # State management
+  provider: ^6.1.2
+
+  # UI / theming / animation
+  google_fonts: ^6.2.1
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.4.1
+  flutter_markdown: ^0.7.4+2
+
+  # Explore / AI Plan (lib1)
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  flutter_tts: ^4.1.0
+
+  # Chat / Albums / Location (lib2)
+  image_picker: ^1.1.2
+  image: ^4.2.0
+  speech_to_text: ^7.0.0
+  url_launcher: ^6.3.1
+  uuid: ^4.5.1
+  intl: ^0.19.0
+
+  # Sinhala Harsh-Word Detector (lib3)
+  onnxruntime: ^1.4.1
+
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  # NOTE: the source projects reference local image and ML-model assets
+  # that were not included in the uploaded lib/ folders. Add the actual
+  # files under these paths (or update the paths to match what you have),
+  # then uncomment:
+  #
+  assets:
+    - assets/images/            
+    - assets/model/sinhala_hate_speech_model.onnx
+    - assets/model/word_index.json
