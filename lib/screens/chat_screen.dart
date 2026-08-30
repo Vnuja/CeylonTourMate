@@ -54,12 +54,12 @@ class _ChatScreenState extends State<ChatScreen> {
           key: _scaffoldKey,
           backgroundColor: CeylonSpiceTheme.darkBg,
           drawer: const SessionsDrawer(),
-
           appBar: AppBar(
             backgroundColor: CeylonSpiceTheme.darkSurface,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.menu, color: CeylonSpiceTheme.textSecondary),
+              icon:
+                  const Icon(Icons.menu, color: CeylonSpiceTheme.textSecondary),
               onPressed: () => _scaffoldKey.currentState?.openDrawer(),
             ),
             title: Row(
@@ -70,17 +70,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [CeylonSpiceTheme.deepJungle, CeylonSpiceTheme.saffron],
+                      colors: [
+                        CeylonSpiceTheme.deepJungle,
+                        CeylonSpiceTheme.saffron
+                      ],
                     ),
                   ),
-                  child: const Center(child: Text('🌴', style: TextStyle(fontSize: 16))),
+                  child: const Center(
+                      child: Text('🌴', style: TextStyle(fontSize: 16))),
                 ),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Ceylon Travel Planner',
+                      'CeylonTourMate',
                       style: GoogleFonts.playfairDisplay(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -100,7 +104,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         const SizedBox(width: 4),
                         Text(
                           'Sri Lanka Tour Guide',
-                          style: GoogleFonts.lato(fontSize: 10, color: CeylonSpiceTheme.textSecondary),
+                          style: GoogleFonts.lato(
+                              fontSize: 10,
+                              color: CeylonSpiceTheme.textSecondary),
                         ),
                       ],
                     ),
@@ -110,36 +116,44 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.travel_explore_rounded, color: CeylonSpiceTheme.saffron),
+                icon: const Icon(Icons.travel_explore_rounded,
+                    color: CeylonSpiceTheme.saffron),
                 tooltip: 'Location Identifier',
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const LocationCaptureScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const LocationCaptureScreen()),
                   );
                 },
               ),
               if (provider.isSpeaking)
                 IconButton(
-                  icon: const Icon(Icons.stop_circle, color: CeylonSpiceTheme.cinnamon),
+                  icon: const Icon(Icons.stop_circle,
+                      color: CeylonSpiceTheme.cinnamon),
                   onPressed: provider.stopSpeaking,
                   tooltip: 'Stop speaking',
                 ),
             ],
           ),
-
           body: provider.sessionsLoading && provider.activeSession == null
-              ? const Center(child: CircularProgressIndicator(color: CeylonSpiceTheme.saffron))
+              ? const Center(
+                  child: CircularProgressIndicator(
+                      color: CeylonSpiceTheme.saffron))
               : Column(
                   children: [
-                    if (provider.activeSession != null && provider.activeSession!.title != 'New Chat')
+                    if (provider.activeSession != null &&
+                        provider.activeSession!.title != 'New Chat')
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 6),
                         color: CeylonSpiceTheme.darkCard,
                         child: Text(
                           provider.activeSession!.title,
-                          style: GoogleFonts.lato(fontSize: 12, color: CeylonSpiceTheme.textSecondary),
+                          style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: CeylonSpiceTheme.textSecondary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -152,7 +166,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               itemCount: provider.messages.length,
                               itemBuilder: (context, i) {
-                                return ChatBubble(message: provider.messages[i]);
+                                return ChatBubble(
+                                    message: provider.messages[i]);
                               },
                             ),
                     ),
@@ -182,14 +197,17 @@ class _EmptyState extends StatelessWidget {
                 colors: [CeylonSpiceTheme.deepJungle, CeylonSpiceTheme.saffron],
               ),
               boxShadow: [
-                BoxShadow(color: CeylonSpiceTheme.saffron.withOpacity(0.3), blurRadius: 20),
+                BoxShadow(
+                    color: CeylonSpiceTheme.saffron.withOpacity(0.3),
+                    blurRadius: 20),
               ],
             ),
-            child: const Center(child: Text('🌴', style: TextStyle(fontSize: 40))),
+            child:
+                const Center(child: Text('🌴', style: TextStyle(fontSize: 40))),
           ),
           const SizedBox(height: 16),
           Text(
-            'Ceylon Travel Planner',
+            'CeylonTourMate',
             style: GoogleFonts.playfairDisplay(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -199,7 +217,8 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Your AI guide to Sri Lanka 🌴',
-            style: GoogleFonts.lato(fontSize: 14, color: CeylonSpiceTheme.textSecondary),
+            style: GoogleFonts.lato(
+                fontSize: 14, color: CeylonSpiceTheme.textSecondary),
           ),
         ],
       ),

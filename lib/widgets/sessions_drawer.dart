@@ -57,7 +57,7 @@ class SessionsDrawer extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Ceylon Travel Planner',
+                            Text('CeylonTourMate',
                                 style: GoogleFonts.playfairDisplay(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -82,8 +82,8 @@ class SessionsDrawer extends StatelessWidget {
                         },
                         icon: const Icon(Icons.add, size: 18),
                         label: Text('New Chat',
-                            style: GoogleFonts.lato(
-                                fontWeight: FontWeight.w600)),
+                            style:
+                                GoogleFonts.lato(fontWeight: FontWeight.w600)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: CeylonSpiceTheme.cinnamon,
                           foregroundColor: CeylonSpiceTheme.coconutCream,
@@ -144,8 +144,7 @@ class SessionsDrawer extends StatelessWidget {
                               provider.switchSession(session);
                               Navigator.pop(context);
                             },
-                            onDelete: () =>
-                                provider.deleteSession(session.id),
+                            onDelete: () => provider.deleteSession(session.id),
                           );
                         },
                       ),
@@ -155,7 +154,7 @@ class SessionsDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Text(
-                  'Ceylon Travel Planner v1.0 • Travel AI',
+                  'CeylonTourMate v1.0 • Travel AI',
                   style: GoogleFonts.lato(
                     fontSize: 10,
                     color: CeylonSpiceTheme.textSecondary.withOpacity(0.5),
@@ -215,36 +214,35 @@ class _SessionTile extends StatelessWidget {
           color: Colors.transparent,
           child: ListTile(
             dense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-          leading: Icon(
-            Icons.chat_bubble_outline,
-            size: 16,
-            color: isActive
-                ? CeylonSpiceTheme.saffron
-                : CeylonSpiceTheme.textSecondary,
-          ),
-          title: Text(
-            session.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.lato(
-              fontSize: 13,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+            leading: Icon(
+              Icons.chat_bubble_outline,
+              size: 16,
               color: isActive
-                  ? CeylonSpiceTheme.textPrimary
+                  ? CeylonSpiceTheme.saffron
                   : CeylonSpiceTheme.textSecondary,
-              fontWeight:
-                  isActive ? FontWeight.w600 : FontWeight.normal,
             ),
-          ),
-          subtitle: Text(
-            _formatDate(session.updatedAt),
-            style: GoogleFonts.lato(
-              fontSize: 10,
-              color: CeylonSpiceTheme.textSecondary.withOpacity(0.6),
+            title: Text(
+              session.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.lato(
+                fontSize: 13,
+                color: isActive
+                    ? CeylonSpiceTheme.textPrimary
+                    : CeylonSpiceTheme.textSecondary,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
             ),
-          ),
-          onTap: onTap,
+            subtitle: Text(
+              _formatDate(session.updatedAt),
+              style: GoogleFonts.lato(
+                fontSize: 10,
+                color: CeylonSpiceTheme.textSecondary.withOpacity(0.6),
+              ),
+            ),
+            onTap: onTap,
           ),
         ),
       ),

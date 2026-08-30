@@ -43,7 +43,7 @@ class CeylonTravelPlannerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: MaterialApp(
-        title: 'Ceylon Travel Planner',
+        title: 'CeylonTourMate',
         debugShowCheckedModeBanner: false,
         theme: CeylonSpiceTheme.darkTheme,
         // SplashScreen (from the Explore app) plays first, then hands off

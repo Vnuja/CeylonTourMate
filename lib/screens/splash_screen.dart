@@ -51,9 +51,11 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
           // Decorative circles
           Positioned(
-            top: -80, right: -80,
+            top: -80,
+            right: -80,
             child: Container(
-              width: 300, height: 300,
+              width: 300,
+              height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppTheme.saffron.withOpacity(0.08),
@@ -61,9 +63,11 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           Positioned(
-            bottom: -100, left: -60,
+            bottom: -100,
+            left: -60,
             child: Container(
-              width: 350, height: 350,
+              width: 350,
+              height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppTheme.cinnamon.withOpacity(0.06),
@@ -77,7 +81,8 @@ class _SplashScreenState extends State<SplashScreen> {
               children: [
                 // Logo icon
                 Container(
-                  width: 100, height: 100,
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: AppTheme.spiceGradient,
@@ -113,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     .slideY(begin: 0.3, duration: 600.ms, curve: Curves.easeOut)
                     .fade(duration: 500.ms),
                 Text(
-                  'TRAVEL PLANNER',
+                  'Tour Mate',
                   style: GoogleFonts.nunito(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -131,38 +136,39 @@ class _SplashScreenState extends State<SplashScreen> {
                     fontSize: 14,
                     color: AppTheme.textMuted,
                   ),
-                )
-                    .animate(delay: 700.ms)
-                    .fade(duration: 500.ms),
+                ).animate(delay: 700.ms).fade(duration: 500.ms),
                 const SizedBox(height: 60),
                 // Loading dots
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (i) => Container(
-                    width: 8, height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: i == 0
-                          ? AppTheme.saffron
-                          : i == 1
-                              ? AppTheme.cinnamon
-                              : AppTheme.deepJungle,
-                    ),
-                  )
-                      .animate(delay: Duration(milliseconds: 900 + i * 150))
-                      .scale(
-                        duration: 600.ms,
-                        curve: Curves.easeInOut,
-                        begin: const Offset(0.5, 0.5),
-                      )
-                      .fade(duration: 400.ms)),
+                  children: List.generate(
+                      3,
+                      (i) => Container(
+                            width: 8,
+                            height: 8,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: i == 0
+                                  ? AppTheme.saffron
+                                  : i == 1
+                                      ? AppTheme.cinnamon
+                                      : AppTheme.deepJungle,
+                            ),
+                          )
+                              .animate(
+                                  delay: Duration(milliseconds: 900 + i * 150))
+                              .scale(
+                                duration: 600.ms,
+                                curve: Curves.easeInOut,
+                                begin: const Offset(0.5, 0.5),
+                              )
+                              .fade(duration: 400.ms)),
                 ),
               ],
             ),
           ),
           // Bottom tagline
-        
         ],
       ),
     );

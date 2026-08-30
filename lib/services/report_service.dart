@@ -46,7 +46,8 @@ class ReportService {
       await _loadFonts();
 
       final doc = pw.Document(
-        theme: pw.ThemeData.withFont(base: _regular, bold: _bold, italic: _italic),
+        theme:
+            pw.ThemeData.withFont(base: _regular, bold: _bold, italic: _italic),
       );
 
       doc.addPage(
@@ -115,7 +116,7 @@ class ReportService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                'CEYLON TRAVEL PLANNER',
+                'CeylonTourMate',
                 style: pw.TextStyle(
                   font: _bold,
                   fontSize: 11,
@@ -191,7 +192,7 @@ class ReportService {
               pw.Divider(color: _border, thickness: 0.6),
               pw.SizedBox(height: 8),
               pw.Text(
-                'Generated on ${_formatDate(DateTime.now())} by Ceylon Travel Planner',
+                'Generated on ${_formatDate(DateTime.now())} by CeylonTourMate',
                 style: pw.TextStyle(font: _italic, fontSize: 9, color: _muted),
               ),
             ],
@@ -202,32 +203,33 @@ class ReportService {
   }
 
   pw.Widget _snapshotChip(String label, String value) => pw.Container(
-    padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: pw.BoxDecoration(
-      color: _cream,
-      borderRadius: pw.BorderRadius.circular(8),
-      border: pw.Border.all(color: _border),
-    ),
-    child: pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        pw.Text(
-          label.toUpperCase(),
-          style: pw.TextStyle(
-            font: _bold,
-            fontSize: 7.5,
-            color: _muted,
-            letterSpacing: 1,
-          ),
+        padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: pw.BoxDecoration(
+          color: _cream,
+          borderRadius: pw.BorderRadius.circular(8),
+          border: pw.Border.all(color: _border),
         ),
-        pw.SizedBox(height: 2),
-        pw.Text(
-          value,
-          style: pw.TextStyle(font: _bold, fontSize: 10.5, color: _deepJungle),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              label.toUpperCase(),
+              style: pw.TextStyle(
+                font: _bold,
+                fontSize: 7.5,
+                color: _muted,
+                letterSpacing: 1,
+              ),
+            ),
+            pw.SizedBox(height: 2),
+            pw.Text(
+              value,
+              style:
+                  pw.TextStyle(font: _bold, fontSize: 10.5, color: _deepJungle),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 
   // ── Running header / footer for content pages ─────────────────────────────
   pw.Widget _buildRunningHeader(pw.Context context) {
@@ -238,7 +240,7 @@ class ReportService {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'CEYLON TRAVEL PLANNER',
+              'CeylonTourMate',
               style: pw.TextStyle(
                 font: _bold,
                 fontSize: 8,
@@ -269,7 +271,7 @@ class ReportService {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'Ceylon Travel Planner',
+              'CeylonTourMate',
               style: pw.TextStyle(font: _regular, fontSize: 7.5, color: _muted),
             ),
             pw.Text(
@@ -284,20 +286,21 @@ class ReportService {
 
   // ── Section title with accent bar ────────────────────────────────────────
   pw.Widget _sectionTitle(String text) => pw.Row(
-    children: [
-      pw.Container(width: 4, height: 18, color: _saffron),
-      pw.SizedBox(width: 8),
-      pw.Text(
-        text,
-        style: pw.TextStyle(font: _headingBold, fontSize: 18, color: _deepJungle),
-      ),
-    ],
-  );
+        children: [
+          pw.Container(width: 4, height: 18, color: _saffron),
+          pw.SizedBox(width: 8),
+          pw.Text(
+            text,
+            style: pw.TextStyle(
+                font: _headingBold, fontSize: 18, color: _deepJungle),
+          ),
+        ],
+      );
 
   pw.Widget _subheading(String text) => pw.Text(
-    text,
-    style: pw.TextStyle(font: _bold, fontSize: 10.5, color: _cinnamon),
-  );
+        text,
+        style: pw.TextStyle(font: _bold, fontSize: 10.5, color: _cinnamon),
+      );
 
   // ── Preferences card ──────────────────────────────────────────────────────
   pw.Widget _preferencesCard(TravelPreferences p) {
@@ -412,7 +415,8 @@ class ReportService {
                     pw.SizedBox(height: 3),
                     pw.Text(
                       rec.packageName,
-                      style: pw.TextStyle(font: _italic, fontSize: 10, color: _muted),
+                      style: pw.TextStyle(
+                          font: _italic, fontSize: 10, color: _muted),
                     ),
                   ],
                 ),
@@ -436,7 +440,8 @@ class ReportService {
             pw.SizedBox(height: 3),
             pw.Text(
               rec.whySuitable,
-              style: pw.TextStyle(font: _regular, fontSize: 9.6, color: PdfColors.grey900),
+              style: pw.TextStyle(
+                  font: _regular, fontSize: 9.6, color: PdfColors.grey900),
             ),
           ],
           if (rec.activities.isNotEmpty) ...[
@@ -503,15 +508,17 @@ class ReportService {
   }
 
   pw.Widget _rankBadge(int rank) => pw.Container(
-    width: 24,
-    height: 24,
-    decoration: pw.BoxDecoration(shape: pw.BoxShape.circle, color: _rankColor(rank)),
-    alignment: pw.Alignment.center,
-    child: pw.Text(
-      '$rank',
-      style: pw.TextStyle(font: _bold, fontSize: 11, color: PdfColors.white),
-    ),
-  );
+        width: 24,
+        height: 24,
+        decoration: pw.BoxDecoration(
+            shape: pw.BoxShape.circle, color: _rankColor(rank)),
+        alignment: pw.Alignment.center,
+        child: pw.Text(
+          '$rank',
+          style:
+              pw.TextStyle(font: _bold, fontSize: 11, color: PdfColors.white),
+        ),
+      );
 
   PdfColor _rankColor(int rank) {
     switch (rank) {
@@ -527,19 +534,21 @@ class ReportService {
   }
 
   pw.Widget _statPair(String label, String value) => pw.Column(
-    crossAxisAlignment: pw.CrossAxisAlignment.start,
-    children: [
-      pw.Text(
-        label.toUpperCase(),
-        style: pw.TextStyle(font: _bold, fontSize: 7.5, color: _muted, letterSpacing: 0.8),
-      ),
-      pw.SizedBox(height: 2),
-      pw.Text(
-        value.isEmpty ? '—' : value,
-        style: pw.TextStyle(font: _bold, fontSize: 10, color: PdfColors.grey900),
-      ),
-    ],
-  );
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            label.toUpperCase(),
+            style: pw.TextStyle(
+                font: _bold, fontSize: 7.5, color: _muted, letterSpacing: 0.8),
+          ),
+          pw.SizedBox(height: 2),
+          pw.Text(
+            value.isEmpty ? '—' : value,
+            style: pw.TextStyle(
+                font: _bold, fontSize: 10, color: PdfColors.grey900),
+          ),
+        ],
+      );
 
   // ── Activities table ──────────────────────────────────────────────────────
   pw.Widget _activitiesTable(List<Activity> activities) {
@@ -569,7 +578,8 @@ class ReportService {
     );
   }
 
-  pw.Widget _tableCell(String text, {bool bold = false, bool alignRight = false}) =>
+  pw.Widget _tableCell(String text,
+          {bool bold = false, bool alignRight = false}) =>
       pw.Padding(
         padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: pw.Text(
@@ -597,86 +607,90 @@ class ReportService {
   }
 
   pw.Widget _hotelTierCard(HotelTierOption tier) => pw.Expanded(
-    child: pw.Container(
-      padding: const pw.EdgeInsets.all(9),
-      decoration: pw.BoxDecoration(
-        color: _cream,
-        borderRadius: pw.BorderRadius.circular(8),
-        border: pw.Border.all(color: _border),
-      ),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Text(
-            tier.tier.toUpperCase(),
-            style: pw.TextStyle(
-              font: _bold,
-              fontSize: 8.5,
-              color: _cinnamon,
-              letterSpacing: 0.6,
-            ),
+        child: pw.Container(
+          padding: const pw.EdgeInsets.all(9),
+          decoration: pw.BoxDecoration(
+            color: _cream,
+            borderRadius: pw.BorderRadius.circular(8),
+            border: pw.Border.all(color: _border),
           ),
-          pw.SizedBox(height: 5),
-          ...tier.hotels.map(
-            (h) => pw.Padding(
-              padding: const pw.EdgeInsets.only(bottom: 4),
-              child: pw.Text(
-                h,
-                style: pw.TextStyle(font: _regular, fontSize: 8.3, color: PdfColors.grey900),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                tier.tier.toUpperCase(),
+                style: pw.TextStyle(
+                  font: _bold,
+                  fontSize: 8.5,
+                  color: _cinnamon,
+                  letterSpacing: 0.6,
+                ),
               ),
-            ),
+              pw.SizedBox(height: 5),
+              ...tier.hotels.map(
+                (h) => pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 4),
+                  child: pw.Text(
+                    h,
+                    style: pw.TextStyle(
+                        font: _regular,
+                        fontSize: 8.3,
+                        color: PdfColors.grey900),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 
   // ── Travel tips card ──────────────────────────────────────────────────────
   pw.Widget _tipsCard(List<String> tips) => pw.Container(
-    width: double.infinity,
-    padding: const pw.EdgeInsets.all(14),
-    decoration: pw.BoxDecoration(
-      color: _cream,
-      borderRadius: pw.BorderRadius.circular(10),
-      border: pw.Border.all(color: _border),
-    ),
-    child: pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: tips
-          .map(
-            (t) => pw.Padding(
-              padding: const pw.EdgeInsets.only(bottom: 7),
-              child: pw.Row(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Container(
-                    margin: const pw.EdgeInsets.only(top: 4, right: 8),
-                    width: 5,
-                    height: 5,
-                    decoration: pw.BoxDecoration(
-                      shape: pw.BoxShape.circle,
-                      color: _saffron,
-                    ),
-                  ),
-                  pw.Expanded(
-                    child: pw.Text(
-                      t,
-                      style: pw.TextStyle(
-                        font: _regular,
-                        fontSize: 9.8,
-                        color: PdfColors.grey900,
+        width: double.infinity,
+        padding: const pw.EdgeInsets.all(14),
+        decoration: pw.BoxDecoration(
+          color: _cream,
+          borderRadius: pw.BorderRadius.circular(10),
+          border: pw.Border.all(color: _border),
+        ),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: tips
+              .map(
+                (t) => pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 7),
+                  child: pw.Row(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Container(
+                        margin: const pw.EdgeInsets.only(top: 4, right: 8),
+                        width: 5,
+                        height: 5,
+                        decoration: pw.BoxDecoration(
+                          shape: pw.BoxShape.circle,
+                          color: _saffron,
+                        ),
                       ),
-                    ),
+                      pw.Expanded(
+                        child: pw.Text(
+                          t,
+                          style: pw.TextStyle(
+                            font: _regular,
+                            fontSize: 9.8,
+                            color: PdfColors.grey900,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
-    ),
-  );
+                ),
+              )
+              .toList(),
+        ),
+      );
 
-  String _titleCase(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+  String _titleCase(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
   String _formatDate(DateTime d) =>
       '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';

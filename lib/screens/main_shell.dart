@@ -8,7 +8,7 @@ import 'detector_home_screen.dart';
 import 'history_screen.dart';
 import 'profile_screen.dart';
 
-/// The single top-level shell for the merged "Ceylon Travel Planner" app.
+/// The single top-level shell for the merged "CeylonTourMate" app.
 /// Every screen that used to be its own app's home screen now lives here
 /// as one tab, so none of the original feature logic is lost:
 ///   0. Explore   -> lib1's Explore / AI Plan / Saved home screen
@@ -113,12 +113,17 @@ class _DetectorTabState extends State<_DetectorTab> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CeylonSpiceTheme.deepJungle,
-        title: Text(_detectorIndex == 0 ? '🛡️ Harsh Word Detector' : '📋 Detection History'),
+        title: Text(_detectorIndex == 0
+            ? '🛡️ Harsh Word Detector'
+            : '📋 Detection History'),
         actions: [
           IconButton(
             tooltip: _detectorIndex == 0 ? 'View history' : 'Back to detector',
-            icon: Icon(_detectorIndex == 0 ? Icons.history_outlined : Icons.shield_outlined),
-            onPressed: () => setState(() => _detectorIndex = _detectorIndex == 0 ? 1 : 0),
+            icon: Icon(_detectorIndex == 0
+                ? Icons.history_outlined
+                : Icons.shield_outlined),
+            onPressed: () =>
+                setState(() => _detectorIndex = _detectorIndex == 0 ? 1 : 0),
           ),
         ],
         bottom: PreferredSize(
