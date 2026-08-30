@@ -1,0 +1,235 @@
+<div id="dashboard-screen" class="screen">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-3"></div>
+    
+    <header class="main-header">
+        <div class="header-left">
+            <div class="mini-logo">
+                <span class="material-symbols-rounded">directions_car</span>
+            </div>
+            <span>Vehicle Monitor</span>
+        </div>
+        <div class="header-right">
+            <button id="notif-btn" class="header-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span id="notif-badge" class="notif-badge">0</span>
+            </button>
+            
+            <button id="signout-btn" class="header-btn">
+                <span class="material-symbols-rounded">logout</span>
+                <span>Sign out</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Notification Panel -->
+    <div id="notif-panel" class="notif-panel">
+        <div class="notif-header">
+            <h3>Notifications</h3>
+            <button id="close-notif" class="icon-btn">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div id="notif-list" class="notif-list">
+            <div class="notif-empty">No new notifications</div>
+        </div>
+        <div class="notif-footer">
+            <button id="clear-all-notif" class="text-btn">Clear All</button>
+        </div>
+    </div>
+
+    
+    <main class="dashboard-content">
+        <div class="welcome-section">
+            <p class="greeting">Welcome,</p>
+            <h2 id="user-name">Driver</h2>
+        </div>
+        
+        <div class="glass-card profile-card">
+            <div class="profile-info">
+                <div class="avatar" id="user-avatar">
+                    <span id="avatar-initial">D</span>
+                </div>
+                <div class="profile-details">
+                    <h3 id="display-name-text">Driver</h3>
+                    <p id="display-email-text">driver@ceylontourmate.com</p>
+                    <span class="status-badge">
+                        <span class="dot"></span> Verified
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <section class="stats-section">
+            <h3>Dashboard</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon speed">
+                        <span class="material-symbols-rounded">speed</span>
+                    </div>
+                    <div class="stat-values">
+                        <div class="val" id="speed-val">0 km/h</div>
+                        <div class="lab">Speed</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon location">
+                        <span class="material-symbols-rounded">gps_fixed</span>
+                    </div>
+                    <div class="stat-values">
+                        <div class="val" id="location-val">GPS Ready</div>
+                        <div class="lab">Location</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon temp">
+                        <span class="material-symbols-rounded">thermostat</span>
+                    </div>
+                    <div class="stat-values">
+                        <div class="val" id="temp-val">-- °C</div>
+                        <div class="lab">Engine Temp</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Drowsiness Detection Section -->
+        <section class="drowsy-section">
+            <div class="section-header">
+                <h3>Driver Alertness</h3>
+                <div class="drowsy-shield safe" id="drowsy-shield">
+                    <span class="material-symbols-rounded">verified_user</span>
+                    Safe
+                </div>
+            </div>
+            <div class="glass-card drowsy-card" id="drowsy-card">
+                <!-- Camera Feed -->
+                <div class="drowsy-camera-area">
+                    <video id="drowsy-video" playsinline muted autoplay></video>
+                    <canvas id="drowsy-canvas"></canvas>
+                    <div class="drowsy-placeholder" id="drowsy-placeholder">
+                        <div class="placeholder-icon">
+                            <span class="material-symbols-rounded">visibility</span>
+                        </div>
+                        <p>Tap Start to begin monitoring</p>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="drowsy-controls">
+                    <!-- Status & Toggle -->
+                    <div class="drowsy-status-row">
+                        <div class="drowsy-status">
+                            <div class="drowsy-status-dot inactive" id="drowsy-status-indicator"></div>
+                            <span class="drowsy-status-label" id="drowsy-status-text">Ready to start</span>
+                        </div>
+                        <button class="drowsy-toggle-btn" id="drowsy-toggle-btn">
+                            <span class="material-symbols-rounded">play_circle</span>
+                            <span class="toggle-label">Start</span>
+                        </button>
+                    </div>
+
+                    <!-- Confidence Bar -->
+                    <div class="drowsy-confidence">
+                        <div class="drowsy-confidence-header">
+                            <span class="drowsy-confidence-label">Drowsiness Level</span>
+                            <span class="drowsy-confidence-value" id="drowsy-confidence-value">0%</span>
+                        </div>
+                        <div class="drowsy-confidence-track">
+                            <div class="drowsy-confidence-bar" id="drowsy-confidence-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Info Chips -->
+                    <div class="drowsy-info">
+                        <div class="drowsy-info-chip">
+                            <span class="material-symbols-rounded">model_training</span>
+                            <div class="chip-text">
+                                <span class="chip-label">Engine</span>
+                                <span class="chip-value" id="drowsy-engine">AI Model</span>
+                            </div>
+                        </div>
+                        <div class="drowsy-info-chip">
+                            <span class="material-symbols-rounded">camera_front</span>
+                            <div class="chip-text">
+                                <span class="chip-label">Camera</span>
+                                <span class="chip-value" id="drowsy-camera-status">Front</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Route Compliance Section -->
+        <section class="compliance-section">
+            <div class="section-header">
+                <h3>Route & Safety</h3>
+                <div id="compliance-status" class="drowsy-shield safe">
+                    <span class="material-symbols-rounded">check_circle</span>
+                    On Route
+                </div>
+            </div>
+            <div class="stats-grid compliance-grid">
+                <div class="stat-card" id="route-card">
+                    <div class="stat-icon compliance">
+                        <span class="material-symbols-rounded">near_me</span>
+                    </div>
+                    <div class="stat-values">
+                        <div class="val" id="route-deviation-val">0m</div>
+                        <div class="lab">Deviation</div>
+                    </div>
+                </div>
+
+                <div class="stat-card" id="geofence-card">
+                    <div class="stat-icon fence">
+                        <span class="material-symbols-rounded">fence</span>
+                    </div>
+                    <div class="stat-values">
+                        <div class="val" id="geofence-status-val">Safe Zone</div>
+                        <div class="lab">Area Status</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="map-section">
+            <div class="section-header">
+                <h3>Live Tracking</h3>
+                <div class="live-indicator">
+                    <span class="pulse"></span> Live
+                </div>
+            </div>
+            <div class="glass-card map-card">
+                <div id="google-map" class="map-container">
+                    <div class="map-placeholder">
+                        <span class="material-symbols-rounded">map</span>
+                        <p>Initializing Live Map...</p>
+                    </div>
+                </div>
+                <div class="map-overlay">
+                    <div class="location-details">
+                        <span class="material-symbols-rounded">location_on</span>
+                        <div class="details-text">
+                            <span class="label">Live Position</span>
+                            <span class="value" id="current-location-name">Waiting for GPS...</span>
+                        </div>
+                    </div>
+                    <button id="recenter-map" class="map-action-btn">
+                        <span class="material-symbols-rounded">my_location</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="dashboard-footer">
+        <div class="footer-links">
+            <a href="#" class="legal-link tos-link">Terms</a>
+            <span class="separator">•</span>
+            <a href="#" class="legal-link privacy-link">Privacy</a>
+        </div>
+        <p class="copyright">© 2026 CeylonTourMate</p>
+    </footer>
+</div>

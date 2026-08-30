@@ -1,0 +1,40 @@
+.gesture-indicator {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 64px;
+    height: 128px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+    pointer-events: none;
+    opacity: 0;
+}
+
+#gesture-left {
+    left: -32px;
+    border-radius: 0 100px 100px 0;
+    padding-left: 24px;
+}
+
+#gesture-right {
+    right: -32px;
+    border-radius: 100px 0 0 100px;
+    padding-right: 24px;
+}
+
+.gesture-indicator span {
+    font-size: 32px;
+    color: var(--text-main);
+}
+
+.gesture-indicator.active {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+}

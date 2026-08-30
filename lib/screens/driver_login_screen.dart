@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/ceylon_theme.dart';
+import 'driver_dashboard_screen.dart';
 
 class DriverLoginScreen extends StatefulWidget {
   const DriverLoginScreen({super.key});
@@ -34,11 +35,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
     
     if (mounted) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Driver login coming soon!'),
-          backgroundColor: CeylonSpiceTheme.saffron,
-        ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const DriverDashboardScreen()),
       );
     }
   }

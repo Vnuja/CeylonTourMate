@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Trigger | CeylonTourMate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --bg-surface: rgba(22, 27, 34, 0.8);
+            --primary: #2f81f7;
+            --secondary: #3fb950;
+            --warning: #d29922;
+            --error: #f85149;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .trigger-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .trigger-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .trigger-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .trigger-btn .material-symbols-rounded {
+            font-size: 32px;
+        }
+
+        .trigger-btn span:last-child {
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Colors */
+        .btn-drowsy { border-bottom: 4px solid var(--error); }
+        .btn-drowsy .material-symbols-rounded { color: var(--error); }
+        
+        .btn-warning { border-bottom: 4px solid var(--warning); }
+        .btn-warning .material-symbols-rounded { color: var(--warning); }
+        
+        .btn-info { border-bottom: 4px solid var(--primary); }
+        .btn-info .material-symbols-rounded { color: var(--primary); }
+        
+        .btn-success { border-bottom: 4px solid var(--secondary); }
+        .btn-success .material-symbols-rounded { color: var(--secondary); }
+
+        .btn-full {
+            grid-column: span 2;
+        }
+
+        /* Status Overlay */
+        #status-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(47, 129, 247, 0.4);
+            z-index: 1000;
+        }
+
+        #status-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 20px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: var(--text-dim);
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-id {
+            color: var(--primary);
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .auth-overlay.hidden {
+            display: none;
+        }
+
+        .auth-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Remote Control Section */
+        .control-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .control-section h3 {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .control-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .control-value {
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        /* Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(47, 129, 247, 0.4);
+        }
+
+        .apply-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .apply-btn:active {
+            transform: scale(0.98);
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="auth-screen" class="auth-overlay">
+        <span class="material-symbols-rounded" style="font-size: 64px; color: var(--primary); margin-bottom: 20px;">vibration</span>
+        <h1>Remote Controller</h1>
+        <p>Please sign in to the same account as the vehicle monitor to trigger remote alerts.</p>
+        <button id="login-btn" class="auth-btn">Sign In with Google</button>
+    </div>
+
+    <div class="header">
+        <h1>CeylonTourMate</h1>
+        <p>Remote Safety Controller</p>
+    </div>
+
+    <div class="user-info">
+        <span>Connected to:</span>
+        <span id="display-name" class="user-id">Loading...</span>
+    </div>
+
+    <!-- Telemetry Simulation Controls -->
+    <div class="control-section">
+        <h3>
+            <span class="material-symbols-rounded" style="font-size: 20px;">settings_remote</span>
+            Telemetry Simulation
+        </h3>
+        
+        <div class="control-group">
+            <div class="control-header">
+                <span class="control-label">Vehicle Speed</span>
+                <span id="speed-display" class="control-value">0 km/h</span>
+            </div>
+            <input type="range" id="speed-slider" min="0" max="220" value="0" oninput="updateDisplay('speed', this.value)">
+        </div>
+
+        <div class="control-group">
+            <div class="control-header">
+                <span class="control-label">Engine Temperature</span>
+                <span id="temp-display" class="control-value">45 °C</span>
+            </div>
+            <input type="range" id="temp-slider" min="20" max="150" value="45" oninput="updateDisplay('temp', this.value)">
+        </div>
+
+        <button class="apply-btn" onclick="applyTelemetry()">Update Telemetry</button>
+    </div>
+
+    <div class="trigger-grid">
+        <div class="trigger-btn btn-success btn-full" onclick="sendTrigger('start_ai', '🚀 AI Drowsiness Monitor Started')">
+            <span class="material-symbols-rounded">play_circle</span>
+            <span>Start AI Monitor</span>
+        </div>
+        <div class="trigger-btn btn-warning btn-full" onclick="sendTrigger('stop_ai', '⏹️ AI Drowsiness Monitor Stopped')">
+            <span class="material-symbols-rounded">stop_circle</span>
+            <span>Stop AI Monitor</span>
+        </div>
+        <div class="trigger-btn btn-drowsy" onclick="sendTrigger('drowsy', '⚠️ Driver fatigue detected!')">
+            <span class="material-symbols-rounded">bedtime</span>
+            <span>Drowsiness</span>
+        </div>
+        <div class="trigger-btn btn-drowsy" onclick="sendTrigger('microsleep', '🚨 CRITICAL: Microsleep detected!')">
+            <span class="material-symbols-rounded">dangerous</span>
+            <span>Microsleep</span>
+        </div>
+        <div class="trigger-btn btn-warning" onclick="sendTrigger('distraction', '⚠️ Please focus on the road!')">
+            <span class="material-symbols-rounded">visibility_off</span>
+            <span>Distraction</span>
+        </div>
+        <div class="trigger-btn btn-warning" onclick="sendTrigger('deviation', '⚠️ Route deviation detected!')">
+            <span class="material-symbols-rounded">alt_route</span>
+            <span>Deviation</span>
+        </div>
+        <div class="trigger-btn btn-info" onclick="sendTrigger('speeding', '⚠️ Speed limit exceeded!')">
+            <span class="material-symbols-rounded">speed</span>
+            <span>Speeding</span>
+        </div>
+        <div class="trigger-btn btn-info" onclick="sendTrigger('phone', '⚠️ Phone usage detected!')">
+            <span class="material-symbols-rounded">smartphone</span>
+            <span>Phone Use</span>
+        </div>
+        <div class="trigger-btn btn-warning" onclick="sendTrigger('sudden_brake', '⚠️ Sudden Braking Detected!')">
+            <span class="material-symbols-rounded">emergency</span>
+            <span>Sudden Brake</span>
+        </div>
+        <div class="trigger-btn btn-success btn-full" onclick="sendTrigger('clear', 'Safe')">
+            <span class="material-symbols-rounded">check_circle</span>
+            <span>Clear All Alerts</span>
+        </div>
+    </div>
+
+    <div id="status-toast">Command Sent!</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { firebaseConfig } from "./js/firebase-config.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        const authScreen = document.getElementById('auth-screen');
+        const loginBtn = document.getElementById('login-btn');
+        const displayName = document.getElementById('display-name');
+        const toast = document.getElementById('status-toast');
+
+        // Auth Logic
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authScreen.classList.add('hidden');
+                displayName.textContent = user.displayName || user.email;
+                window.currentUser = user;
+            } else {
+                authScreen.classList.remove('hidden');
+            }
+        });
+
+        loginBtn.onclick = () => signInWithPopup(auth, provider);
+
+        // Telemetry Update Logic
+        window.updateDisplay = (type, val) => {
+            if (type === 'speed') {
+                document.getElementById('speed-display').textContent = `${val} km/h`;
+            } else if (type === 'temp') {
+                document.getElementById('temp-display').textContent = `${val} °C`;
+            }
+        };
+
+        window.applyTelemetry = async () => {
+            if (!window.currentUser) {
+                alert("Please sign in first.");
+                return;
+            }
+
+            const speed = parseInt(document.getElementById('speed-slider').value);
+            const temp = parseInt(document.getElementById('temp-slider').value);
+            const driverId = window.currentUser.uid;
+
+            try {
+                // Update a telemetry override document
+                await setDoc(doc(db, "telemetry_override", driverId), {
+                    speed: speed,
+                    engineTemp: temp,
+                    timestamp: serverTimestamp(),
+                    active: true
+                });
+
+                showToast(`Telemetry Updated: ${speed}km/h, ${temp}°C`);
+                if (navigator.vibrate) navigator.vibrate(50);
+            } catch (err) {
+                console.error("Failed to update telemetry:", err);
+                alert("Error updating telemetry: " + err.message);
+            }
+        };
+
+        // Trigger Logic
+        window.sendTrigger = async (type, message) => {
+            if (!window.currentUser) {
+                alert("Please sign in first.");
+                return;
+            }
+
+            try {
+                const driverId = window.currentUser.uid;
+                
+                // Send command to a dedicated commands collection
+                await setDoc(doc(db, "commands", driverId), {
+                    type: type,
+                    message: message,
+                    timestamp: serverTimestamp(),
+                    processed: false
+                });
+
+                showToast(`Triggered: ${type.toUpperCase()}`);
+                if (navigator.vibrate) navigator.vibrate(50);
+            } catch (err) {
+                console.error("Failed to send trigger:", err);
+                if (err.code === 'permission-denied' || err.message.includes('API has not been used')) {
+                    alert("CRITICAL ERROR: Cloud Firestore API is not enabled for this project. Please enable it in the Google Cloud Console.");
+                } else {
+                    alert("Error sending trigger: " + err.message);
+                }
+            }
+        };
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+</html>
