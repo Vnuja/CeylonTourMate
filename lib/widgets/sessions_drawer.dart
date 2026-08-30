@@ -211,8 +211,10 @@ class _SessionTile extends StatelessWidget {
                   width: 0.5)
               : null,
         ),
-        child: ListTile(
-          dense: true,
+        child: Material(
+          color: Colors.transparent,
+          child: ListTile(
+            dense: true,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
           leading: Icon(
@@ -243,6 +245,7 @@ class _SessionTile extends StatelessWidget {
             ),
           ),
           onTap: onTap,
+          ),
         ),
       ),
     );

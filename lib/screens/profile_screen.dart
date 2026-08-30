@@ -451,8 +451,10 @@ class _SettingsTile extends StatelessWidget {
         color: CeylonSpiceTheme.darkCard,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -475,6 +477,7 @@ class _SettingsTile extends StatelessWidget {
         ),
         trailing: const Icon(Icons.chevron_right, color: CeylonSpiceTheme.textSecondary, size: 20),
         onTap: onTap,
+        ),
       ),
     );
   }
