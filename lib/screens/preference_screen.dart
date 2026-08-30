@@ -32,7 +32,14 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
 
   static const _groupTypes = ['solo', 'couple', 'family', 'group'];
   static const _genders = ['All Male', 'All Female', 'Mixed'];
-  static const _ageRanges = ['18-24', '25-35', '36-45', '46-60', '60+'];
+  static const _ageRanges = [
+    'MIXED',
+    '18-24',
+    '25-35',
+    '36-45',
+    '46-60',
+    '60+'
+  ];
 
   // MATCHED EXACTLY TO NOTEBOOK OPTIONS
   static const _activities = [
@@ -143,7 +150,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
             children: [
               _buildProgressBar(),
               const SizedBox(height: 28),
-
               _buildSection('Group Type', Icons.group_rounded, [
                 _buildChoiceChips(
                   _groupTypes,
@@ -152,7 +158,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
               ]),
               const SizedBox(height: 24),
-
               _buildSection('Group Size', Icons.people_rounded, [
                 Row(
                   children: [
@@ -176,7 +181,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
               ]),
               const SizedBox(height: 24),
-
               _buildSection('Gender', Icons.person_rounded, [
                 _buildChoiceChips(
                   _genders,
@@ -185,7 +189,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
               ]),
               const SizedBox(height: 24),
-
               _buildSection('Age Range', Icons.cake_rounded, [
                 _buildChoiceChips(
                   _ageRanges,
@@ -194,7 +197,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
               ]),
               const SizedBox(height: 24),
-
               _buildSection('Budget (USD)', Icons.attach_money_rounded, [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,8 +218,8 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                         color: _budgetTier == 'luxury'
                             ? AppTheme.saffron.withOpacity(0.2)
                             : _budgetTier == 'mid-range'
-                            ? AppTheme.cinnamon.withOpacity(0.2)
-                            : AppTheme.deepJungle.withOpacity(0.3),
+                                ? AppTheme.cinnamon.withOpacity(0.2)
+                                : AppTheme.deepJungle.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -228,8 +230,8 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                           color: _budgetTier == 'luxury'
                               ? AppTheme.saffron
                               : _budgetTier == 'mid-range'
-                              ? AppTheme.cinnamon
-                              : AppTheme.coconutCream,
+                                  ? AppTheme.cinnamon
+                                  : AppTheme.coconutCream,
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -274,7 +276,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
               ]),
               const SizedBox(height: 24),
-
               _buildSection(
                 'Activity Preferences',
                 Icons.sports_score_rounded,
@@ -342,7 +343,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-
               _buildSection('Travel Date', Icons.calendar_month_rounded, [
                 GestureDetector(
                   onTap: _pickDate,
@@ -383,7 +383,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 ),
               ]),
               const SizedBox(height: 24),
-
               _buildSection('Trip Duration', Icons.schedule_rounded, [
                 Row(
                   children: [
@@ -417,7 +416,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                   ],
                 ),
               ]),
-
               if (_errorMessage != null) ...[
                 const SizedBox(height: 16),
                 Container(
@@ -441,7 +439,6 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
             ],
           ),
         ),
-
         Positioned(
           bottom: 0,
           left: 0,
