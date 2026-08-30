@@ -46,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '348302268612',
     projectId: 'travelapp-a839a',
     authDomain: 'travelapp-a839a.firebaseapp.com',
+    databaseURL: 'https://travelapp-a839a-default-rtdb.firebaseio.com',
     storageBucket: 'travelapp-a839a.firebasestorage.app',
     measurementId: 'G-RJMXSZ30DF',
   );
@@ -55,6 +56,7 @@ class DefaultFirebaseOptions {
     appId: '1:348302268612:android:2497b09eb353342c2c1191',
     messagingSenderId: '348302268612',
     projectId: 'travelapp-a839a',
+    databaseURL: 'https://travelapp-a839a-default-rtdb.firebaseio.com',
     storageBucket: 'travelapp-a839a.firebasestorage.app',
   );
 
@@ -63,6 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:348302268612:ios:a25f9622516e8d6a2c1191',
     messagingSenderId: '348302268612',
     projectId: 'travelapp-a839a',
+    databaseURL: 'https://travelapp-a839a-default-rtdb.firebaseio.com',
     storageBucket: 'travelapp-a839a.firebasestorage.app',
     iosBundleId: 'com.example.travelApp',
   );
@@ -72,6 +75,7 @@ class DefaultFirebaseOptions {
     appId: '1:348302268612:ios:a25f9622516e8d6a2c1191',
     messagingSenderId: '348302268612',
     projectId: 'travelapp-a839a',
+    databaseURL: 'https://travelapp-a839a-default-rtdb.firebaseio.com',
     storageBucket: 'travelapp-a839a.firebasestorage.app',
     iosBundleId: 'com.example.travelApp',
   );
@@ -82,6 +86,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '348302268612',
     projectId: 'travelapp-a839a',
     authDomain: 'travelapp-a839a.firebaseapp.com',
+    databaseURL: 'https://travelapp-a839a-default-rtdb.firebaseio.com',
     storageBucket: 'travelapp-a839a.firebasestorage.app',
     measurementId: 'G-GS5RHRVLRN',
   );
