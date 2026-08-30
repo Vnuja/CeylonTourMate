@@ -1,5 +1,4 @@
-import { messaging, db, auth } from "./firebase-config.js";
-import { getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js";
+import { getMessagingInstance, db, auth } from "./firebase-config.js";
 import { doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { startDetection, stopDetection } from "./drowsiness.js";
 
@@ -17,14 +16,21 @@ export const initNotifications = async () => {
         }
     }
 
-    // 2. Register Service Worker for background notifications (important for mobile)
+    // 2. Get the messaging instance (returns null if browser is unsupported)
+    const messaging = await getMessagingInstance();
+    if (!messaging) {
+        console.warn('[Notifications] Firebase Messaging not supported in this browser. Push notifications disabled.');
+        return;
+    }
+
+    // 3. Register Service Worker for background notifications (important for mobile)
     if ('serviceWorker' in navigator) {
         try {
             const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
             console.log('Service Worker registered with scope:', registration.scope);
 
-            // 3. Get FCM Token
-            // VAPID Key validation
+            // 4. Get FCM Token
+            const { getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
             const vapidKey = 'BKWi6F_n6-e94USFNn8Wlqe4abz4CcqW3KqhnRqNxFeSTFQBE_KPbK1XkNQcC9Y_Z3OndlIqLLC6NQIdD2qUkms';
             if (vapidKey.length > 20 && !vapidKey.startsWith('YOUR_')) {
                 const token = await getToken(messaging, { vapidKey }).catch(err => {
@@ -43,7 +49,8 @@ export const initNotifications = async () => {
         }
     }
 
-    // 4. Handle foreground messages
+    // 5. Handle foreground messages
+    const { onMessage } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
     onMessage(messaging, (payload) => {
         console.log('Message received in foreground: ', payload);
         showSnackbar(payload.notification.body, 'info');
