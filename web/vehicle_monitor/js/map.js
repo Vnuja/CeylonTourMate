@@ -356,19 +356,23 @@ function toRad(deg) {
  */
 function handlePositionError(error) {
     let message = "GPS error.";
-    switch (error.code) {
-        case error.PERMISSION_DENIED:
-            message = "Location permission denied. Please allow GPS access.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            message = "GPS signal unavailable.";
-            break;
-        case error.TIMEOUT:
-            message = "GPS request timed out.";
-            break;
+    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        message = "GPS blocked: Browser requires HTTPS or localhost for Geolocation.";
+    } else {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                message = "Location permission denied. Please allow GPS access in your browser settings.";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                message = "GPS signal unavailable.";
+                break;
+            case error.TIMEOUT:
+                message = "GPS request timed out.";
+                break;
+        }
     }
     console.error("Geolocation error:", error.code, error.message);
-    showSnackbar(message, "error");
+    showSnackbar(message, "error", 8000);
     updateLocationUI(null, null, message);
 }
 

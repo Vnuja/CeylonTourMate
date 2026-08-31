@@ -12,22 +12,26 @@ class DriverDashboardScreen extends StatefulWidget {
 }
 
 class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
-  final String viewId = 'vehicle-monitor-iframe';
+  static const String viewId = 'vehicle-monitor-iframe';
+  static bool _isRegistered = false;
 
   @override
   void initState() {
     super.initState();
-    // Register the iframe view factory
-    PlatformViewRegistry.registerViewFactory(viewId, (int id) {
-      final iframe = html.IFrameElement()
-        ..src = 'vehicle_monitor/index.html'
-        ..style.border = 'none'
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..allowFullscreen = true
-        ..allow = 'camera; microphone; geolocation; autoplay';
-      return iframe;
-    });
+    // Register the iframe view factory once
+    if (!_isRegistered) {
+      PlatformViewRegistry.registerViewFactory(viewId, (int id) {
+        final iframe = html.IFrameElement()
+          ..src = 'vehicle_monitor/index.html'
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%'
+          ..allowFullscreen = true
+          ..allow = 'camera; microphone; geolocation; autoplay';
+        return iframe;
+      });
+      _isRegistered = true;
+    }
   }
 
   @override
