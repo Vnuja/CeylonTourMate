@@ -33,7 +33,10 @@ export const initNotifications = async () => {
             const { getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
             const vapidKey = 'BKWi6F_n6-e94USFNn8Wlqe4abz4CcqW3KqhnRqNxFeSTFQBE_KPbK1XkNQcC9Y_Z3OndlIqLLC6NQIdD2qUkms';
             if (vapidKey.length > 20 && !vapidKey.startsWith('YOUR_')) {
-                const token = await getToken(messaging, { vapidKey }).catch(err => {
+                const token = await getToken(messaging, { 
+                    vapidKey,
+                    serviceWorkerRegistration: registration 
+                }).catch(err => {
                     console.warn('[Notifications] VAPID Key is invalid or push subscription failed:', err.message);
                     return null;
                 });
@@ -177,13 +180,13 @@ export const showSnackbar = (message, type = 'info', duration = 5000) => {
     // Trigger animation
     setTimeout(() => snackbar.classList.add('show'), 10);
 
-    // Vibration feedback
-    if (window.navigator.vibrate && (navigator.userActivation?.hasBeenActive || document.hasFocus())) {
+    // Vibration feedback (only if user has interacted with the page)
+    if (window.navigator.vibrate && navigator.userActivation?.hasBeenActive) {
         try {
             if (type === 'error') window.navigator.vibrate([100, 50, 100]);
             else if (type === 'warning') window.navigator.vibrate(100);
         } catch (e) {
-            // Silently fail if blocked by policy
+            // Silently fail if blocked by browser policy
         }
     }
 

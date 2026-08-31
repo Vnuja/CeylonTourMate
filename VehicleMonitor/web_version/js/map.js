@@ -243,16 +243,23 @@ function handlePositionUpdate(position) {
 
     // --- Update marker ---
     if (marker) {
-        marker.position = newPos;
-        if (marker.content?.style) {
-            marker.content.style.transform = `rotate(${rotation}deg)`;
+        try {
+            marker.position = newPos;
+            if (marker.content?.style) {
+                marker.content.style.transform = `rotate(${rotation}deg)`;
+            }
+        } catch (e) {
+            // AdvancedMarkerElement can throw if the Maps API failed to load correctly
+            // (e.g. ApiTargetBlockedMapError). Suppress to keep GPS updates running.
         }
     }
 
     // --- Update polyline trail ---
-    routePath.push(new google.maps.LatLng(latitude, longitude));
-    if (polyline) {
-        polyline.setPath(routePath);
+    if (typeof google !== 'undefined' && google.maps?.LatLng) {
+        routePath.push(new google.maps.LatLng(latitude, longitude));
+        if (polyline) {
+            try { polyline.setPath(routePath); } catch (e) { /* suppress if API broken */ }
+        }
     }
 
     // --- Pan map to follow ---
@@ -376,12 +383,14 @@ function handlePositionError(error) {
     updateLocationUI(null, null, message);
 }
 
+let googleGeocodingDisabled = false;
+
 /**
  * Perform reverse geocoding to get the nearest town name.
  * Throttled to avoid excessive API calls.
  */
 async function updateTownName(pos) {
-    if (!geocoder || !pos) return;
+    if (!pos) return;
 
     // Only geocode if we moved more than ~100m or if it's the first time
     if (lastGeocodePos && google.maps.geometry?.spherical) {
@@ -399,6 +408,16 @@ async function updateTownName(pos) {
     if (isGeocoding) return;
     isGeocoding = true;
 
+    // If Google Geocoding was previously detected as unauthorized/disabled, use fallback directly
+    if (googleGeocodingDisabled || !geocoder) {
+        try {
+            await fallbackReverseGeocode(pos);
+        } finally {
+            isGeocoding = false;
+        }
+        return;
+    }
+
     try {
         const response = await geocoder.geocode({ location: pos });
         if (response.results && response.results[0]) {
@@ -410,21 +429,37 @@ async function updateTownName(pos) {
             applyTownName(town, pos);
         }
     } catch (error) {
-        console.warn("Google Geocoding failed, trying fallback...", error.message);
-        if (error.message && error.message.includes("REQUEST_DENIED")) {
-            // Automatic fallback to OpenStreetMap if Google API is restricted
-            await fallbackReverseGeocode(pos);
-        }
+        const errStr = String(error?.message || error || "");
+        console.warn("Google Geocoding unavailable or unauthorized. Switching to fallback geocoder.", errStr);
+        // Disable subsequent Google Geocoder calls to stop console error spam
+        googleGeocodingDisabled = true;
+        await fallbackReverseGeocode(pos);
     } finally {
         isGeocoding = false;
     }
 }
 
 /**
- * Fallback geocoder using OpenStreetMap (Nominatim)
- * No API key required for low-volume research use.
+ * Fallback geocoder using BigDataCloud & OpenStreetMap (Nominatim)
+ * Fast, free, CORS-enabled, and requires no API key.
  */
 async function fallbackReverseGeocode(pos) {
+    try {
+        // Fast, reliable client reverse-geocoder
+        const bdcUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.lat}&longitude=${pos.lng}&localityLanguage=en`;
+        const bdcRes = await fetch(bdcUrl);
+        if (bdcRes.ok) {
+            const data = await bdcRes.json();
+            const town = data.locality || data.city || data.principalSubdivision || data.countryName;
+            if (town) {
+                applyTownName(town, pos);
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn("BigDataCloud fallback failed, trying OpenStreetMap...", e);
+    }
+
     try {
         const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}&zoom=10`;
         const response = await fetch(url, {
@@ -434,14 +469,15 @@ async function fallbackReverseGeocode(pos) {
         
         if (data && data.address) {
             const town = data.address.suburb || data.address.town || data.address.village || data.address.city || "Unknown Area";
-            console.log("Fallback Geocoded Town Name:", town);
             applyTownName(town, pos);
+            return;
         }
     } catch (error) {
-        console.error("Fallback Geocoding also failed:", error);
-        // Last resort: show formatted coords
-        applyTownName(`${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`, pos, true);
+        console.error("All fallback geocoders failed:", error);
     }
+
+    // Last resort: show formatted coords
+    applyTownName(`${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`, pos, true);
 }
 
 function applyTownName(town, pos, isRaw = false) {

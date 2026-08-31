@@ -376,12 +376,14 @@ function handlePositionError(error) {
     updateLocationUI(null, null, message);
 }
 
+let googleGeocodingDisabled = false;
+
 /**
  * Perform reverse geocoding to get the nearest town name.
  * Throttled to avoid excessive API calls.
  */
 async function updateTownName(pos) {
-    if (!geocoder || !pos) return;
+    if (!pos) return;
 
     // Only geocode if we moved more than ~100m or if it's the first time
     if (lastGeocodePos && google.maps.geometry?.spherical) {
@@ -399,6 +401,16 @@ async function updateTownName(pos) {
     if (isGeocoding) return;
     isGeocoding = true;
 
+    // If Google Geocoding was previously detected as unauthorized/disabled, use fallback directly
+    if (googleGeocodingDisabled || !geocoder) {
+        try {
+            await fallbackReverseGeocode(pos);
+        } finally {
+            isGeocoding = false;
+        }
+        return;
+    }
+
     try {
         const response = await geocoder.geocode({ location: pos });
         if (response.results && response.results[0]) {
@@ -410,21 +422,37 @@ async function updateTownName(pos) {
             applyTownName(town, pos);
         }
     } catch (error) {
-        console.warn("Google Geocoding failed, trying fallback...", error.message);
-        if (error.message && error.message.includes("REQUEST_DENIED")) {
-            // Automatic fallback to OpenStreetMap if Google API is restricted
-            await fallbackReverseGeocode(pos);
-        }
+        const errStr = String(error?.message || error || "");
+        console.warn("Google Geocoding unavailable or unauthorized. Switching to fallback geocoder.", errStr);
+        // Disable subsequent Google Geocoder calls to stop console error spam
+        googleGeocodingDisabled = true;
+        await fallbackReverseGeocode(pos);
     } finally {
         isGeocoding = false;
     }
 }
 
 /**
- * Fallback geocoder using OpenStreetMap (Nominatim)
- * No API key required for low-volume research use.
+ * Fallback geocoder using BigDataCloud & OpenStreetMap (Nominatim)
+ * Fast, free, CORS-enabled, and requires no API key.
  */
 async function fallbackReverseGeocode(pos) {
+    try {
+        // Fast, reliable client reverse-geocoder
+        const bdcUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.lat}&longitude=${pos.lng}&localityLanguage=en`;
+        const bdcRes = await fetch(bdcUrl);
+        if (bdcRes.ok) {
+            const data = await bdcRes.json();
+            const town = data.locality || data.city || data.principalSubdivision || data.countryName;
+            if (town) {
+                applyTownName(town, pos);
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn("BigDataCloud fallback failed, trying OpenStreetMap...", e);
+    }
+
     try {
         const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.lat}&lon=${pos.lng}&zoom=10`;
         const response = await fetch(url, {
@@ -434,14 +462,15 @@ async function fallbackReverseGeocode(pos) {
         
         if (data && data.address) {
             const town = data.address.suburb || data.address.town || data.address.village || data.address.city || "Unknown Area";
-            console.log("Fallback Geocoded Town Name:", town);
             applyTownName(town, pos);
+            return;
         }
     } catch (error) {
-        console.error("Fallback Geocoding also failed:", error);
-        // Last resort: show formatted coords
-        applyTownName(`${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`, pos, true);
+        console.error("All fallback geocoders failed:", error);
     }
+
+    // Last resort: show formatted coords
+    applyTownName(`${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}`, pos, true);
 }
 
 function applyTownName(town, pos, isRaw = false) {
@@ -516,7 +545,7 @@ async function calculateAndDisplayRoute() {
         travelMode: google.maps.TravelMode.DRIVING
     };
 
-    directionsService.route(request, (result, status) => {
+    directionsService.route(request, async (result, status) => {
         if (status === 'OK') {
             directionsRenderer.setDirections(result);
             
@@ -530,12 +559,44 @@ async function calculateAndDisplayRoute() {
             }));
             setTargetRoute(path);
 
-            console.log("Real route loaded successfully.");
+            console.log("Real Google road route loaded successfully.");
         } else {
-            console.error("Directions request failed due to " + status);
-            showSnackbar("Could not load road route. Using straight lines.", "warning");
+            console.warn("Google Directions failed (" + status + "). Attempting OpenStreetMap/OSRM road fallback...");
+            await fallbackRoadRoute();
         }
     });
+}
+
+/**
+ * Fallback road route loader using Open Source Routing Machine (OSRM)
+ * Provides full road turn coordinates without requiring Google Cloud billing.
+ */
+async function fallbackRoadRoute() {
+    try {
+        const coords = plannedTowns.map(p => `${p.lng},${p.lat}`).join(';');
+        const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data && data.routes && data.routes[0]) {
+            const coordinates = data.routes[0].geometry.coordinates; // [lng, lat]
+            const googlePoints = coordinates.map(c => new google.maps.LatLng(c[1], c[0]));
+            
+            if (plannedPolyline) {
+                plannedPolyline.setPath(googlePoints);
+                plannedPolyline.setMap(map);
+            }
+            
+            const pathObjects = coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+            setTargetRoute(pathObjects);
+            console.log("OSRM fallback road route loaded successfully:", pathObjects.length, "waypoints.");
+        } else {
+            showSnackbar("Could not load road route. Using straight lines.", "warning");
+        }
+    } catch (err) {
+        console.warn("OSRM routing fallback failed:", err);
+        showSnackbar("Could not load road route. Using straight lines.", "warning");
+    }
 }
 
 /**
