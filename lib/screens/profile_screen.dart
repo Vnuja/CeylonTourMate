@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart' as app_auth;
 import '../theme/ceylon_theme.dart';
-import 'driver_login_screen.dart';
+import 'driver_dashboard_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -417,7 +417,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const DriverLoginScreen()),
+                              MaterialPageRoute(builder: (_) => const DriverDashboardScreen()),
                             );
                           },
                         ),

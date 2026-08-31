@@ -1,10 +1,10 @@
-import { login, logout, watchAuthState } from "./js/auth.js";
+import { login, logout, watchAuthState, checkRedirectResult } from "./js/auth.js";
 import { initGestures } from "./js/gestures.js";
 import { elements, showLoader, updateUI, initElements } from "./js/ui.js";
 import { loadComponent } from "./js/loader.js";
 import { initLegal } from "./js/legal.js";
 import { initMapModule, stopLiveTracking } from "./js/map.js";
-import { initNotifications, updateNotifUI, clearAllNotifications, initRemoteCommands, initRemoteTelemetry } from "./js/notifications.js";
+import { initNotifications, updateNotifUI, clearAllNotifications, initRemoteCommands, initRemoteTelemetry, showSnackbar } from "./js/notifications.js";
 import { initDrowsinessDetection, stopDetection } from "./js/drowsiness.js";
 import { initComplianceModule } from "./js/compliance.js";
 
@@ -31,7 +31,19 @@ async function initializeApp() {
     updateNotifUI(); // Refresh list on start
     console.log("DOM elements and notifications initialized.");
 
-    // 3. Set up Auth Listeners
+    // 3. Handle pending redirect sign-in result (from signInWithRedirect fallback)
+    try {
+        const redirectUser = await checkRedirectResult();
+        if (redirectUser) {
+            console.log("Redirect sign-in completed for:", redirectUser.email);
+        }
+    } catch (error) {
+        console.error("Redirect sign-in error:", error);
+        showSnackbar("Sign-in failed: " + _friendlyError(error), 'error', 8000);
+        showLoader(false);
+    }
+
+    // 4. Set up Auth Listeners
     watchAuthState((user) => {
         console.log("Auth state changed:", user ? "User logged in" : "No user");
         updateUI(user);
@@ -65,14 +77,16 @@ async function initializeApp() {
 
     });
 
-    // 4. Set up Event Listeners
+    // 5. Set up Event Listeners
     if (elements.signinBtn) {
         elements.signinBtn.addEventListener('click', async () => {
             showLoader(true);
             try {
                 await login();
+                // If login() uses redirect, the page will navigate away.
+                // If popup succeeded, auth state listener handles the rest.
             } catch (error) {
-                alert("Login failed: " + error.message);
+                showSnackbar("Sign-in failed: " + _friendlyError(error), 'error', 8000);
                 showLoader(false);
             }
         });
@@ -90,7 +104,7 @@ async function initializeApp() {
         });
     }
 
-    // 5. Initialize Gestures
+    // 6. Initialize Gestures
     initGestures(() => {
         if (elements.dashboardScreen && elements.dashboardScreen.classList.contains('active')) {
             console.log("Back gesture detected, signing out...");
@@ -99,7 +113,7 @@ async function initializeApp() {
         }
     });
 
-    // 6. Notification Panel Listeners
+    // 7. Notification Panel Listeners
     if (elements.notifBtn) {
         elements.notifBtn.addEventListener('click', () => {
             elements.notifPanel.classList.toggle('active');
@@ -121,6 +135,27 @@ async function initializeApp() {
     showLoader(false);
 }
 
+/**
+ * Returns a user-friendly error message for common Firebase Auth errors.
+ * @param {Error} error
+ * @returns {string}
+ */
+function _friendlyError(error) {
+    switch (error.code) {
+        case 'auth/unauthorized-domain':
+            return 'This domain is not authorized. Please contact the administrator.';
+        case 'auth/popup-blocked':
+            return 'Popup was blocked by the browser. Please allow popups and try again.';
+        case 'auth/popup-closed-by-user':
+            return 'Sign-in was cancelled. Please try again.';
+        case 'auth/network-request-failed':
+            return 'Network error. Please check your connection and try again.';
+        case 'auth/too-many-requests':
+            return 'Too many attempts. Please wait a moment and try again.';
+        default:
+            return error.message || 'An unexpected error occurred.';
+    }
+}
 
 
 // Start the app

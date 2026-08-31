@@ -21,7 +21,7 @@
     height: 350px;
     top: -100px;
     left: -80px;
-    background: radial-gradient(circle, rgba(26, 94, 58, 0.1), transparent);
+    background: radial-gradient(circle, rgba(27, 94, 59, 0.35), transparent);
 }
 
 .blob-2 {
@@ -29,7 +29,7 @@
     height: 300px;
     bottom: -120px;
     right: -60px;
-    background: radial-gradient(circle, rgba(192, 123, 52, 0.1), transparent);
+    background: radial-gradient(circle, rgba(232, 160, 32, 0.2), transparent);
 }
 
 .blob-3 {
@@ -37,7 +37,7 @@
     height: 280px;
     top: -80px;
     right: -60px;
-    background: radial-gradient(circle, rgba(26, 94, 58, 0.08), transparent);
+    background: radial-gradient(circle, rgba(181, 101, 29, 0.2), transparent);
 }
 
 /* Mobile Responsiveness */

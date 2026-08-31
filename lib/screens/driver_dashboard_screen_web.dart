@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:html' as html;
+import '../theme/ceylon_theme.dart';
 import '../utils/platform_view_registry.dart';
 
 class DriverDashboardScreen extends StatefulWidget {
@@ -31,11 +33,18 @@ class _DriverDashboardScreenState extends State<DriverDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: CeylonSpiceTheme.darkBg,
       appBar: AppBar(
-        title: const Text('Driver Monitor', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black87,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(
+          'Driver Monitor',
+          style: GoogleFonts.playfairDisplay(
+            color: CeylonSpiceTheme.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: CeylonSpiceTheme.darkSurface,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: CeylonSpiceTheme.textPrimary),
       ),
       body: HtmlElementView(viewType: viewId),
     );

@@ -1,31 +1,34 @@
 :root {
-    /* Base Colors */
-    --bg-color: #f6f1e5;
-    --bg-surface: #ffffff;
-    --bg-elevated: #ffffff;
+    /* Base Colors - Ceylon TourMate Dark Theme */
+    --bg-color: #0F1A12;
+    --bg-surface: #1A2E1E;
+    --bg-elevated: #243328;
     
     /* Brand Colors */
-    --primary: #c07b34;
-    --primary-dim: rgba(192, 123, 52, 0.1);
-    --secondary: #1a5e3a;
-    --secondary-dim: rgba(26, 94, 58, 0.1);
+    --primary: #E8A020;
+    --primary-dim: rgba(232, 160, 32, 0.15);
+    --secondary: #1B5E3B;
+    --secondary-dim: rgba(27, 94, 59, 0.25);
+    --cinnamon: #B5651D;
+    --cinnamon-dark: #8B4513;
     
     /* Semantic Colors */
-    --success: #70b14c;
-    --warning: #e6a23c;
-    --error: #f56c6c;
-    --info: #1a5e3a;
+    --success: #4CAF50;
+    --warning: #E8A020;
+    --error: #E57373;
+    --info: #29B6F6;
     
     /* Text Colors */
-    --text-main: #2e2e2e;
-    --text-dim: #6b6b6b;
-    --text-muted: #999999;
+    --text-main: #F5F0E8;
+    --text-dim: #B8C4BB;
+    --text-muted: #7E9084;
     
     /* UI Elements */
-    --border-color: #c07b34;
-    --glass-bg: rgba(255, 255, 255, 0.95);
-    --glass-border: #c07b34;
-    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --border-color: rgba(232, 160, 32, 0.28);
+    --border-subtle: #2D4A32;
+    --glass-bg: rgba(26, 46, 30, 0.92);
+    --glass-border: rgba(232, 160, 32, 0.25);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     
     /* Transitions */
     --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
