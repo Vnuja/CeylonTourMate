@@ -185,8 +185,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   }) {
     final defaultPlaceholder =
         placeholder ?? Container(color: AppTheme.cardDark);
-    final defaultError =
-        errorWidget ??
+    final defaultError = errorWidget ??
         Container(
           color: AppTheme.cardMid,
           child: const Icon(Icons.image_rounded, color: AppTheme.textMuted),
@@ -213,16 +212,16 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   /// Builds a save-compatible map from the current recommendation,
   /// matching the format used by SavedScreen._allDestinations.
   Map<String, dynamic> get _destMap => {
-    'name': widget.recommendation.destination,
-    'tagline': widget.recommendation.packageName,
-    'image': _images.first,
-    'region': '', // not available in TravelRecommendation
-    'rating': widget.recommendation.rating?.toString() ?? '',
-    'tags': widget.recommendation.activities
-        .take(2)
-        .map((a) => a.name)
-        .toList(),
-  };
+        'name': widget.recommendation.destination,
+        'tagline': widget.recommendation.packageName,
+        'image': _images.first,
+        'region': '', // not available in TravelRecommendation
+        'rating': widget.recommendation.rating?.toString() ?? '',
+        'tags': widget.recommendation.activities
+            .take(2)
+            .map((a) => a.name)
+            .toList(),
+      };
 
   @override
   void initState() {
@@ -330,10 +329,8 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
 
     setState(() => _submittingRating = true);
     try {
-      final displayName = context
-          .read<app_auth.AuthProvider>()
-          .firebaseUser
-          ?.displayName;
+      final displayName =
+          context.read<app_auth.AuthProvider>().firebaseUser?.displayName;
       await _feedbackService.submitRating(
         uid: uid,
         destination: widget.recommendation.destination,
@@ -454,7 +451,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               icon: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppTheme.darkBg.withOpacity(0.7),
+                  color: AppTheme.darkBg.withValues(alpha: 0.7),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -470,7 +467,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                 icon: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppTheme.darkBg.withOpacity(0.7),
+                    color: AppTheme.darkBg.withValues(alpha: 0.7),
                     shape: BoxShape.circle,
                   ),
                   // FIX: icon and color now reflect real saved state
@@ -502,12 +499,12 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     placeholder: Container(color: AppTheme.cardDark),
                   ),
                   Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.transparent, AppTheme.darkBg],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: const [0.5, 1.0],
+                        stops: [0.5, 1.0],
                       ),
                     ),
                   ),
@@ -641,10 +638,10 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.deepJungle.withOpacity(0.15),
+                      color: AppTheme.deepJungle.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppTheme.deepJungle.withOpacity(0.4),
+                        color: AppTheme.deepJungle.withValues(alpha: 0.4),
                       ),
                     ),
                     child: Text(
@@ -691,70 +688,67 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       scrollDirection: Axis.horizontal,
                       itemCount: _images.length,
                       padding: const EdgeInsets.only(right: 24),
-                      itemBuilder: (_, i) =>
-                          GestureDetector(
-                                onTap: () => _openGallery(i),
-                                child: Container(
+                      itemBuilder: (_, i) => GestureDetector(
+                        onTap: () => _openGallery(i),
+                        child: Container(
+                          width: 175,
+                          height: 130, // fixed size, same for every thumbnail
+                          margin: const EdgeInsets.only(right: 12),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: SizedBox(
                                   width: 175,
-                                  height:
-                                      130, // fixed size, same for every thumbnail
-                                  margin: const EdgeInsets.only(right: 12),
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(14),
-                                        child: SizedBox(
-                                          width: 175,
-                                          height: 130,
-                                          child: _buildImage(
-                                            imagePath: _images[i],
-                                            fit: BoxFit
-                                                .cover, // fills the box completely, crops if needed
-                                            placeholder: Container(
-                                              color: AppTheme.cardMid,
-                                              child: const Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color: AppTheme.saffron,
-                                                      strokeWidth: 1.5,
-                                                    ),
-                                              ),
-                                            ),
-                                            errorWidget: Container(
-                                              color: AppTheme.cardMid,
-                                              child: const Icon(
-                                                Icons.image_rounded,
-                                                color: AppTheme.textMuted,
-                                              ),
-                                            ),
-                                          ),
+                                  height: 130,
+                                  child: _buildImage(
+                                    imagePath: _images[i],
+                                    fit: BoxFit
+                                        .cover, // fills the box completely, crops if needed
+                                    placeholder: Container(
+                                      color: AppTheme.cardMid,
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppTheme.saffron,
+                                          strokeWidth: 1.5,
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 8,
-                                        right: 8,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(
-                                              0.45,
-                                            ),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.zoom_in_rounded,
-                                            color: Colors.white,
-                                            size: 14,
-                                          ),
-                                        ),
+                                    ),
+                                    errorWidget: Container(
+                                      color: AppTheme.cardMid,
+                                      child: const Icon(
+                                        Icons.image_rounded,
+                                        color: AppTheme.textMuted,
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              )
-                              .animate(delay: Duration(milliseconds: 100 * i))
-                              .fade(duration: 400.ms)
-                              .slideX(begin: 0.15),
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(
+                                      alpha: 0.45,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.zoom_in_rounded,
+                                    color: Colors.white,
+                                    size: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                          .animate(delay: Duration(milliseconds: 100 * i))
+                          .fade(duration: 400.ms)
+                          .slideX(begin: 0.15),
                     ),
                   ),
                 ],
@@ -780,7 +774,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                         color: AppTheme.cardDark,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppTheme.saffron.withOpacity(0.3),
+                          color: AppTheme.saffron.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -788,7 +782,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppTheme.saffron.withOpacity(0.15),
+                              color: AppTheme.saffron.withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -848,13 +842,13 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xFF0B7285).withOpacity(0.15),
+                          const Color(0xFF0B7285).withValues(alpha: 0.15),
                           AppTheme.cardDark,
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFF0B7285).withOpacity(0.3),
+                        color: const Color(0xFF0B7285).withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -897,7 +891,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          AppTheme.cinnamon.withOpacity(0.15),
+                          AppTheme.cinnamon.withValues(alpha: 0.15),
                           AppTheme.cardDark,
                         ],
                         begin: Alignment.topLeft,
@@ -905,7 +899,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       ),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppTheme.cinnamon.withOpacity(0.3),
+                        color: AppTheme.cinnamon.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -1087,8 +1081,8 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                   _sectionTitle('Top Activities', Icons.sports_score_rounded),
                   const SizedBox(height: 12),
                   ...rec.activities.asMap().entries.map(
-                    (e) => _ActivityCard(activity: e.value, index: e.key),
-                  ),
+                        (e) => _ActivityCard(activity: e.value, index: e.key),
+                      ),
                 ],
               ),
             ),
@@ -1140,7 +1134,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       color: AppTheme.cardDark,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppTheme.saffron.withOpacity(0.2),
+                        color: AppTheme.saffron.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Column(
@@ -1321,27 +1315,27 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   }
 
   Widget _sectionTitle(String title, IconData icon) => Row(
-    children: [
-      Icon(icon, color: AppTheme.saffron, size: 18),
-      const SizedBox(width: 8),
-      Text(
-        title,
-        style: GoogleFonts.cormorantGaramond(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: AppTheme.coconutCream,
-        ),
-      ),
-    ],
-  );
+        children: [
+          Icon(icon, color: AppTheme.saffron, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: GoogleFonts.cormorantGaramond(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.coconutCream,
+            ),
+          ),
+        ],
+      );
 
   Widget _packageStat(String label, String value, IconData icon, Color color) =>
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2)),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
@@ -1415,65 +1409,65 @@ class _ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _activityColors[index % _activityColors.length];
     return Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppTheme.cardDark,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: color.withOpacity(0.2)),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardDark,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                '${index + 1}',
+                style: GoogleFonts.cormorantGaramond(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+            ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '${index + 1}',
-                    style: GoogleFonts.cormorantGaramond(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: color,
-                    ),
-                  ),
-                ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              activity.name,
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.coconutCream,
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  activity.name,
-                  style: GoogleFonts.nunito(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.coconutCream,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'USD ${activity.priceUsd}',
-                  style: GoogleFonts.nunito(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: color,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        )
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'USD ${activity.priceUsd}',
+              style: GoogleFonts.nunito(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    )
         .animate(delay: Duration(milliseconds: 100 * index))
         .fade(duration: 400.ms)
         .slideX(begin: 0.1);
@@ -1576,8 +1570,8 @@ class _BudgetMeter extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isOver
-                  ? AppTheme.errorRed.withOpacity(0.1)
-                  : AppTheme.deepJungle.withOpacity(0.2),
+                  ? AppTheme.errorRed.withValues(alpha: 0.1)
+                  : AppTheme.deepJungle.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
@@ -1595,9 +1589,8 @@ class _BudgetMeter extends StatelessWidget {
                         : 'Within your budget! Great choice for your group.',
                     style: GoogleFonts.nunito(
                       fontSize: 12,
-                      color: isOver
-                          ? AppTheme.errorRed
-                          : const Color(0xFF51CF66),
+                      color:
+                          isOver ? AppTheme.errorRed : const Color(0xFF51CF66),
                     ),
                   ),
                 ),
@@ -1622,8 +1615,7 @@ class _GalleryViewer extends StatefulWidget {
     BoxFit fit,
     Widget? placeholder,
     Widget? errorWidget,
-  })
-  buildImage;
+  }) buildImage;
 
   const _GalleryViewer({
     required this.images,
@@ -1705,7 +1697,7 @@ class _GalleryViewerState extends State<_GalleryViewer> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -1722,7 +1714,7 @@ class _GalleryViewerState extends State<_GalleryViewer> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -1757,7 +1749,7 @@ class _GalleryViewerState extends State<_GalleryViewer> {
                     decoration: BoxDecoration(
                       color: i == _currentIndex
                           ? AppTheme.saffron
-                          : Colors.white.withOpacity(0.4),
+                          : Colors.white.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(3),
                     ),
                   ),

@@ -46,7 +46,6 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
     _initModel();
     _initSpeech();
     _textController.addListener(() => setState(() {})); // ← add this
-
   }
 
   Future<void> _initModel() async {
@@ -75,7 +74,10 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
       setState(() => _isListening = false);
     } else {
       _clearResults();
-      setState(() { _isListening = true; _partialText = ''; });
+      setState(() {
+        _isListening = true;
+        _partialText = '';
+      });
 
       await _speech.listen(
         localeId: 'si_LK', // Sinhala (Sri Lanka)
@@ -109,28 +111,28 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
     final prediction = await _model.predict(text);
 
     // Run harsh word detection
-    final words      = _model.tokenizer.extractWords(text);
-    final analysis   = HarshWordDetector.analyzeWords(words);
-    final detected   = HarshWordDetector.getHarshWords(words);
+    final words = _model.tokenizer.extractWords(text);
+    final analysis = HarshWordDetector.analyzeWords(words);
+    final detected = HarshWordDetector.getHarshWords(words);
 
     setState(() {
       _isAnalyzing = false;
-      _result      = prediction;
-      _harshWords  = detected;
+      _result = prediction;
+      _harshWords = detected;
       _wordAnalysis = analysis;
-      _showAlert   = (prediction?.isHateSpeech ?? false) || detected.isNotEmpty;
+      _showAlert = (prediction?.isHateSpeech ?? false) || detected.isNotEmpty;
     });
 
     // Save to history
     if (prediction != null) {
       await HistoryStorage.save(HistoryEntry(
-        id:           DateTime.now().millisecondsSinceEpoch.toString(),
-        text:         text,
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        text: text,
         isHateSpeech: prediction.isHateSpeech,
-        confidence:   prediction.confidence,
-        harshWords:   detected,
-        timestamp:    DateTime.now(),
-        inputMode:    _inputMode,
+        confidence: prediction.confidence,
+        harshWords: detected,
+        timestamp: DateTime.now(),
+        inputMode: _inputMode,
       ));
     }
   }
@@ -138,10 +140,10 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
   void _clearResults() {
     setState(() {
       _displayText = '';
-      _result      = null;
-      _harshWords  = [];
+      _result = null;
+      _harshWords = [];
       _wordAnalysis = [];
-      _showAlert   = false;
+      _showAlert = false;
       _partialText = '';
     });
     _textController.clear();
@@ -186,12 +188,11 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
             // Analyzing spinner
             if (_isAnalyzing) ...[
               const SizedBox(height: 20),
-              Center(
+              const Center(
                 child: Column(
                   children: [
                     CircularProgressIndicator(color: CeylonSpice.cinnamon),
-                    const SizedBox(height: 10),
-                    
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -212,9 +213,9 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
               const SizedBox(height: 4),
               HarshWordAlert(
                 isHateSpeech: _result!.isHateSpeech,
-                harshWords:   _harshWords,
-                confidence:   _result!.confidence,
-                onDismiss:    () => setState(() => _showAlert = false),
+                harshWords: _harshWords,
+                confidence: _result!.confidence,
+                onDismiss: () => setState(() => _showAlert = false),
               ),
             ],
 
@@ -224,8 +225,10 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
             ],
 
             // Clean result
-            if (_result != null && !_result!.isHateSpeech &&
-                _harshWords.isEmpty && !_isAnalyzing) ...[
+            if (_result != null &&
+                !_result!.isHateSpeech &&
+                _harshWords.isEmpty &&
+                !_isAnalyzing) ...[
               _CleanResult(),
             ],
           ],
@@ -240,8 +243,8 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
         Center(
           child: MicButton(
             isListening: _isListening,
-            isDisabled:  !_isModelReady || !_speechAvailable,
-            onPressed:   _toggleListening,
+            isDisabled: !_isModelReady || !_speechAvailable,
+            onPressed: _toggleListening,
           ),
         ),
         const SizedBox(height: 12),
@@ -255,7 +258,8 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
                         ? '🔴 Listening... tap to stop'
                         : 'Tap and speak in Sinhala',
             textAlign: TextAlign.center,
-            style: TextStyle(color: CeylonSpice.textMid, fontSize: 13, height: 1.5),
+            style: const TextStyle(
+                color: CeylonSpice.textMid, fontSize: 13, height: 1.5),
           ),
         ),
 
@@ -268,13 +272,17 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
             decoration: BoxDecoration(
               color: CeylonSpice.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border(left: BorderSide(color: CeylonSpice.saffron, width: 3)),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4)],
+              border: const Border(
+                  left: BorderSide(color: CeylonSpice.saffron, width: 3)),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04), blurRadius: 4)
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'LIVE TRANSCRIPTION',
                   style: TextStyle(
                     color: CeylonSpice.saffronDark,
@@ -286,7 +294,8 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
                 const SizedBox(height: 4),
                 Text(
                   _partialText,
-                  style: TextStyle(color: CeylonSpice.text, fontSize: 16, height: 1.5),
+                  style: const TextStyle(
+                      color: CeylonSpice.text, fontSize: 16, height: 1.5),
                 ),
               ],
             ),
@@ -302,7 +311,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: CeylonSpice.cinnamon),
             ),
-            child: Text(
+            child: const Text(
               '⚠️ Speech recognition not available on this device. Use "Type Text" mode.',
               style: TextStyle(color: CeylonSpice.cinnamon, fontSize: 12),
             ),
@@ -318,7 +327,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'ENTER SINHALA TEXT',
           style: TextStyle(
             color: CeylonSpice.textMid,
@@ -335,31 +344,37 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4),
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04), blurRadius: 4),
             ],
           ),
           child: TextField(
             controller: _textController,
             maxLines: 4,
-            style: TextStyle(color: CeylonSpice.text, fontSize: 16, height: 1.6),
+            style: const TextStyle(
+                color: CeylonSpice.text, fontSize: 16, height: 1.6),
             cursorColor: CeylonSpice.cinnamon,
             decoration: InputDecoration(
               hintText: 'උදා: මේ කෙනා හරිම නරකයි...',
-              hintStyle: TextStyle(color: CeylonSpice.textLight, fontSize: 15),
+              hintStyle:
+                  const TextStyle(color: CeylonSpice.textLight, fontSize: 15),
               filled: true,
               fillColor: CeylonSpice.surface,
               contentPadding: const EdgeInsets.all(14),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: CeylonSpice.creamDarker, width: 1.2),
+                borderSide: const BorderSide(
+                    color: CeylonSpice.creamDarker, width: 1.2),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: CeylonSpice.creamDarker, width: 1.2),
+                borderSide: const BorderSide(
+                    color: CeylonSpice.creamDarker, width: 1.2),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: CeylonSpice.cinnamon, width: 1.8),
+                borderSide:
+                    const BorderSide(color: CeylonSpice.cinnamon, width: 1.8),
               ),
             ),
           ),
@@ -400,7 +415,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
         // Small hint under the button so users know why it's disabled.
         if (!hasText) ...[
           const SizedBox(height: 6),
-          Text(
+          const Text(
             'Type some text above to enable the Analyze button.',
             style: TextStyle(color: CeylonSpice.textLight, fontSize: 11),
           ),
@@ -425,12 +440,13 @@ class _StatusBadge extends StatelessWidget {
         children: [
           if (!isReady)
             const SizedBox(
-              width: 12, height: 12,
+              width: 12,
+              height: 12,
               child: CircularProgressIndicator(
-                color: CeylonSpice.coconutCream, strokeWidth: 2,
+                color: CeylonSpice.coconutCream,
+                strokeWidth: 2,
               ),
             ),
-          
         ],
       ),
     );
@@ -463,14 +479,22 @@ class _ModeToggle extends StatelessWidget {
                   color: isActive ? CeylonSpice.cinnamon : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: isActive
-                      ? [BoxShadow(color: CeylonSpice.cinnamon.withOpacity(0.3), blurRadius: 6, offset: const Offset(0, 2))]
+                      ? [
+                          BoxShadow(
+                              color:
+                                  CeylonSpice.cinnamon.withValues(alpha: 0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2))
+                        ]
                       : [],
                 ),
                 child: Center(
                   child: Text(
                     mode == 'voice' ? '🎤  Voice Input' : '⌨️  Type Text',
                     style: TextStyle(
-                      color: isActive ? CeylonSpice.coconutCream : CeylonSpice.textMid,
+                      color: isActive
+                          ? CeylonSpice.coconutCream
+                          : CeylonSpice.textMid,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
@@ -504,7 +528,7 @@ class _AnalyzedTextSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'ANALYZED TEXT',
               style: TextStyle(
                 color: CeylonSpice.textLight,
@@ -516,12 +540,13 @@ class _AnalyzedTextSection extends StatelessWidget {
             GestureDetector(
               onTap: onClear,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                 decoration: BoxDecoration(
                   color: CeylonSpice.creamDark,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
+                child: const Text(
                   '✕ Clear',
                   style: TextStyle(color: CeylonSpice.textMid, fontSize: 12),
                 ),
@@ -542,7 +567,7 @@ class _AnalyzedTextSection extends StatelessWidget {
         ),
         if (harshWords.isNotEmpty) ...[
           const SizedBox(height: 4),
-          Text(
+          const Text(
             '🔴 Red = harsh words detected',
             style: TextStyle(color: CeylonSpice.danger, fontSize: 11),
           ),
@@ -565,10 +590,10 @@ class _CleanResult extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: CeylonSpice.deepJungle, width: 1.5),
       ),
-      child: Column(
+      child: const Column(
         children: [
-          const Text('✅', style: TextStyle(fontSize: 36)),
-          const SizedBox(height: 6),
+          Text('✅', style: TextStyle(fontSize: 36)),
+          SizedBox(height: 6),
           Text(
             'No hate speech or harsh words detected.',
             textAlign: TextAlign.center,
@@ -578,8 +603,7 @@ class _CleanResult extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 4),
-
+          SizedBox(height: 4),
         ],
       ),
     );

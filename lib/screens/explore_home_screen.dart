@@ -242,99 +242,99 @@ class _ExploreTab extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ceylon',
-                            style: GoogleFonts.cormorantGaramond(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.coconutCream,
-                            ),
-                          ),
-                          Text(
-                            'TRAVEL PLANNER',
-                            style: GoogleFonts.nunito(
-                              fontSize: 10,
-                              color: AppTheme.saffron,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 3,
-                            ),
-                          ),
-                        ],
-                      )
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Ceylon',
+                        style: GoogleFonts.cormorantGaramond(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.coconutCream,
+                        ),
+                      ),
+                      Text(
+                        'TRAVEL PLANNER',
+                        style: GoogleFonts.nunito(
+                          fontSize: 10,
+                          color: AppTheme.saffron,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                    ],
+                  )
                       .animate()
                       .fade(duration: const Duration(milliseconds: 500))
                       .slideX(begin: -0.1),
                   Row(
                     children: [
                       GestureDetector(
-                            onTap: onAIPlanTap,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 10,
+                        onTap: onAIPlanTap,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.spiceGradient,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.saffron.withValues(alpha: 0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
                               ),
-                              decoration: BoxDecoration(
-                                gradient: AppTheme.spiceGradient,
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.saffron.withOpacity(0.3),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 16,
+                                color: AppTheme.darkBg,
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.auto_awesome_rounded,
-                                    size: 16,
-                                    color: AppTheme.darkBg,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    'AI Plan',
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppTheme.darkBg,
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(width: 6),
+                              Text(
+                                'AI Plan',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.darkBg,
+                                ),
                               ),
-                            ),
-                          )
+                            ],
+                          ),
+                        ),
+                      )
                           .animate(delay: const Duration(milliseconds: 200))
                           .fade(duration: const Duration(milliseconds: 400))
                           .scale(),
                       const SizedBox(width: 10),
                       GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ProfileScreen(),
-                              ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProfileScreen(),
+                          ),
+                        ),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppTheme.cardMid,
+                            border: Border.all(
+                              color: AppTheme.saffron.withValues(alpha: 0.3),
                             ),
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppTheme.cardMid,
-                                border: Border.all(
-                                  color: AppTheme.saffron.withOpacity(0.3),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.person_rounded,
-                                color: AppTheme.saffron,
-                                size: 20,
-                              ),
-                            ),
-                          )
+                          ),
+                          child: const Icon(
+                            Icons.person_rounded,
+                            color: AppTheme.saffron,
+                            size: 20,
+                          ),
+                        ),
+                      )
                           .animate(delay: const Duration(milliseconds: 250))
                           .fade(duration: const Duration(milliseconds: 400))
                           .scale(),
@@ -344,7 +344,6 @@ class _ExploreTab extends StatelessWidget {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
@@ -352,32 +351,31 @@ class _ExploreTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                        'Discover\nSri Lanka',
-                        style: GoogleFonts.cormorantGaramond(
-                          fontSize: 42,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.coconutCream,
-                          height: 1.1,
-                        ),
-                      )
+                    'Discover\nSri Lanka',
+                    style: GoogleFonts.cormorantGaramond(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.coconutCream,
+                      height: 1.1,
+                    ),
+                  )
                       .animate(delay: const Duration(milliseconds: 100))
                       .fade(duration: const Duration(milliseconds: 600))
                       .slideY(begin: 0.2),
                   const SizedBox(height: 8),
                   Text(
-                        'AI-powered recommendations tailored to you',
-                        style: GoogleFonts.nunito(
-                          fontSize: 14,
-                          color: AppTheme.textMuted,
-                        ),
-                      )
+                    'AI-powered recommendations tailored to you',
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      color: AppTheme.textMuted,
+                    ),
+                  )
                       .animate(delay: const Duration(milliseconds: 200))
                       .fade(duration: const Duration(milliseconds: 500)),
                 ],
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(top: 24),
@@ -395,7 +393,6 @@ class _ExploreTab extends StatelessWidget {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
@@ -424,11 +421,11 @@ class _ExploreTab extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1.35,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                        ),
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.35,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                    ),
                     itemCount: categories.length,
                     itemBuilder: (_, i) =>
                         _CategoryCard(data: categories[i], index: i),
@@ -437,94 +434,92 @@ class _ExploreTab extends StatelessWidget {
               ),
             ),
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
               child: GestureDetector(
                 onTap: onAIPlanTap,
-                child:
-                    Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            gradient: AppTheme.jungleGradient,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: AppTheme.saffron.withOpacity(0.3),
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.jungleGradient,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: AppTheme.saffron.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Plan Your Perfect',
+                              style: GoogleFonts.cormorantGaramond(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.coconutCream,
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Plan Your Perfect',
-                                      style: GoogleFonts.cormorantGaramond(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppTheme.coconutCream,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Sri Lanka Journey',
-                                      style: GoogleFonts.cormorantGaramond(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppTheme.saffron,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Get AI-curated top 3 destinations with packages, activities & pricing',
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 12,
-                                        color: AppTheme.textMuted,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 10,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        gradient: AppTheme.spiceGradient,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Text(
-                                        'Get Recommendations →',
-                                        style: GoogleFonts.nunito(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppTheme.darkBg,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                            Text(
+                              'Sri Lanka Journey',
+                              style: GoogleFonts.cormorantGaramond(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.saffron,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Get AI-curated top 3 destinations with packages, activities & pricing',
+                              style: GoogleFonts.nunito(
+                                fontSize: 12,
+                                color: AppTheme.textMuted,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.spiceGradient,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                'Get Recommendations →',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.darkBg,
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppTheme.saffron.withOpacity(0.15),
-                                ),
-                                child: const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  color: AppTheme.saffron,
-                                  size: 30,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                        .animate(delay: const Duration(milliseconds: 400))
-                        .fade(duration: const Duration(milliseconds: 600))
-                        .slideY(begin: 0.2),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppTheme.saffron.withValues(alpha: 0.15),
+                        ),
+                        child: const Icon(
+                          Icons.auto_awesome_rounded,
+                          color: AppTheme.saffron,
+                          size: 30,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                    .animate(delay: const Duration(milliseconds: 400))
+                    .fade(duration: const Duration(milliseconds: 600))
+                    .slideY(begin: 0.2),
               ),
             ),
           ),
@@ -545,205 +540,205 @@ class _FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-          width: 240,
-          margin: const EdgeInsets.only(right: 16),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // ✅ Image.asset replaces CachedNetworkImage for local assets
-                Image.asset(
-                  data['image'] as String,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: AppTheme.cardDark,
-                    child: const Center(
-                      child: Icon(
-                        Icons.image_not_supported_rounded,
-                        color: AppTheme.textMuted,
-                        size: 32,
-                      ),
-                    ),
+      width: 240,
+      margin: const EdgeInsets.only(right: 16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // ✅ Image.asset replaces CachedNetworkImage for local assets
+            Image.asset(
+              data['image'] as String,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: AppTheme.cardDark,
+                child: const Center(
+                  child: Icon(
+                    Icons.image_not_supported_rounded,
+                    color: AppTheme.textMuted,
+                    size: 32,
                   ),
                 ),
-                // Gradient overlay
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        AppTheme.darkBg.withOpacity(0.95),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.3, 1.0],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.deepJungle.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          data['region'] as String,
-                          style: GoogleFonts.nunito(
-                            fontSize: 10,
-                            color: AppTheme.coconutCream,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        data['name'] as String,
-                        style: GoogleFonts.cormorantGaramond(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.coconutCream,
-                        ),
-                      ),
-                      Text(
-                        data['tagline'] as String,
-                        style: GoogleFonts.nunito(
-                          fontSize: 12,
-                          color: AppTheme.textMuted,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        children: (data['tags'] as List<String>)
-                            .map(
-                              (t) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.saffron.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: AppTheme.saffron.withOpacity(0.3),
-                                  ),
-                                ),
-                                child: Text(
-                                  t,
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 10,
-                                    color: AppTheme.saffron,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      StreamBuilder<RatingSummary>(
-                        stream: _feedbackService.watchAverageRating(
-                          data['name'] as String,
-                        ),
-                        builder: (context, snapshot) {
-                          final live = snapshot.data;
-                          final hasLive = live != null && live.count > 0;
-                          return Row(
-                            children: [
-                              if (hasLive) ...[
-                                const Icon(
-                                  Icons.star_rounded,
-                                  size: 14,
-                                  color: AppTheme.saffron,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  live.average.toStringAsFixed(1),
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 13,
-                                    color: AppTheme.coconutCream,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '(${live.count})',
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 11,
-                                    color: AppTheme.textMuted,
-                                  ),
-                                ),
-                              ] else ...[
-                                const Icon(
-                                  Icons.star_border_rounded,
-                                  size: 14,
-                                  color: AppTheme.textMuted,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'New',
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 12,
-                                    color: AppTheme.textMuted,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(width: 10),
-                              StreamBuilder<List<ReviewEntry>>(
-                                stream: _feedbackService.watchReviews(
-                                  data['name'] as String,
-                                ),
-                                builder: (context, reviewSnap) {
-                                  final commentCount = (reviewSnap.data ?? [])
-                                      .where(
-                                        (r) => r.comment.trim().isNotEmpty,
-                                      )
-                                      .length;
-                                  if (commentCount == 0) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  return Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.chat_bubble_rounded,
-                                        size: 12,
-                                        color: AppTheme.textMuted,
-                                      ),
-                                      const SizedBox(width: 3),
-                                      Text(
-                                        '$commentCount',
-                                        style: GoogleFonts.nunito(
-                                          fontSize: 12,
-                                          color: AppTheme.textMuted,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        )
+            // Gradient overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    AppTheme.darkBg.withValues(alpha: 0.95),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.3, 1.0],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.deepJungle.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      data['region'] as String,
+                      style: GoogleFonts.nunito(
+                        fontSize: 10,
+                        color: AppTheme.coconutCream,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    data['name'] as String,
+                    style: GoogleFonts.cormorantGaramond(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.coconutCream,
+                    ),
+                  ),
+                  Text(
+                    data['tagline'] as String,
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    children: (data['tags'] as List<String>)
+                        .map(
+                          (t) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.saffron.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: AppTheme.saffron.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Text(
+                              t,
+                              style: GoogleFonts.nunito(
+                                fontSize: 10,
+                                color: AppTheme.saffron,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 10),
+                  StreamBuilder<RatingSummary>(
+                    stream: _feedbackService.watchAverageRating(
+                      data['name'] as String,
+                    ),
+                    builder: (context, snapshot) {
+                      final live = snapshot.data;
+                      final hasLive = live != null && live.count > 0;
+                      return Row(
+                        children: [
+                          if (hasLive) ...[
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 14,
+                              color: AppTheme.saffron,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              live.average.toStringAsFixed(1),
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                color: AppTheme.coconutCream,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${live.count})',
+                              style: GoogleFonts.nunito(
+                                fontSize: 11,
+                                color: AppTheme.textMuted,
+                              ),
+                            ),
+                          ] else ...[
+                            const Icon(
+                              Icons.star_border_rounded,
+                              size: 14,
+                              color: AppTheme.textMuted,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'New',
+                              style: GoogleFonts.nunito(
+                                fontSize: 12,
+                                color: AppTheme.textMuted,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(width: 10),
+                          StreamBuilder<List<ReviewEntry>>(
+                            stream: _feedbackService.watchReviews(
+                              data['name'] as String,
+                            ),
+                            builder: (context, reviewSnap) {
+                              final commentCount = (reviewSnap.data ?? [])
+                                  .where(
+                                    (r) => r.comment.trim().isNotEmpty,
+                                  )
+                                  .length;
+                              if (commentCount == 0) {
+                                return const SizedBox.shrink();
+                              }
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.chat_bubble_rounded,
+                                    size: 12,
+                                    color: AppTheme.textMuted,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    '$commentCount',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 12,
+                                      color: AppTheme.textMuted,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    )
         .animate(delay: Duration(milliseconds: 100 * index))
         .fade(duration: const Duration(milliseconds: 500))
         .slideX(begin: 0.2);
@@ -759,13 +754,12 @@ class _CategoryCard extends StatelessWidget {
 
   void _openGallery(BuildContext context) {
     final color = Color(data['color'] as int);
-    final images =
-        (data['images'] as List?)?.cast<String>() ??
+    final images = (data['images'] as List?)?.cast<String>() ??
         [if (data['image'] != null) data['image'] as String];
 
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.75),
+      barrierColor: Colors.black.withValues(alpha: 0.75),
       builder: (dialogContext) => Dialog(
         backgroundColor: AppTheme.cardDark,
         insetPadding: const EdgeInsets.symmetric(
@@ -774,7 +768,7 @@ class _CategoryCard extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: color.withOpacity(0.35)),
+          side: BorderSide(color: color.withValues(alpha: 0.35)),
         ),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480, maxHeight: 620),
@@ -788,7 +782,7 @@ class _CategoryCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.85),
+                        color: color.withValues(alpha: 0.85),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -832,7 +826,7 @@ class _CategoryCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(height: 1, color: color.withOpacity(0.2)),
+              Divider(height: 1, color: color.withValues(alpha: 0.2)),
               Flexible(
                 child: images.isEmpty
                     ? Padding(
@@ -849,11 +843,11 @@ class _CategoryCard extends StatelessWidget {
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 1.1,
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                            ),
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.1,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                        ),
                         itemCount: images.length,
                         itemBuilder: (_, i) => ClipRRect(
                           borderRadius: BorderRadius.circular(14),
@@ -861,7 +855,7 @@ class _CategoryCard extends StatelessWidget {
                             images[i],
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Container(
-                              color: color.withOpacity(0.15),
+                              color: color.withValues(alpha: 0.15),
                               child: const Center(
                                 child: Icon(
                                   Icons.image_not_supported_rounded,
@@ -890,77 +884,78 @@ class _CategoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
-            border: Border.all(color: color.withOpacity(0.25)),
+            color: color.withValues(alpha: 0.12),
+            border: Border.all(color: color.withValues(alpha: 0.25)),
           ),
           child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (image != null)
-                  Image.asset(
-                    image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: color.withOpacity(0.2)),
-                  ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.black.withOpacity(0.15),
-                        AppTheme.darkBg.withOpacity(0.88),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.2, 1.0],
-                    ),
-                  ),
+            fit: StackFit.expand,
+            children: [
+              if (image != null)
+                Image.asset(
+                  image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) =>
+                      Container(color: color.withValues(alpha: 0.2)),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.85),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          data['icon'] as IconData,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        data['label'] as String,
-                        style: GoogleFonts.nunito(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.coconutCream,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        data['description'] as String? ?? '',
-                        style: GoogleFonts.nunito(
-                          fontSize: 10,
-                          color: AppTheme.textMuted,
-                          height: 1.2,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withValues(alpha: 0.15),
+                      AppTheme.darkBg.withValues(alpha: 0.88),
                     ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.2, 1.0],
                   ),
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.85),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        data['icon'] as IconData,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      data['label'] as String,
+                      style: GoogleFonts.nunito(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.coconutCream,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      data['description'] as String? ?? '',
+                      style: GoogleFonts.nunito(
+                        fontSize: 10,
+                        color: AppTheme.textMuted,
+                        height: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-      )
+      ),
+    )
         .animate(delay: Duration(milliseconds: 50 * index))
         .fade(duration: const Duration(milliseconds: 400))
         .scale(begin: const Offset(0.85, 0.85));
@@ -980,7 +975,7 @@ class _BottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.cardDark,
         border: Border(
-          top: BorderSide(color: AppTheme.saffron.withOpacity(0.1)),
+          top: BorderSide(color: AppTheme.saffron.withValues(alpha: 0.1)),
         ),
       ),
       child: BottomNavigationBar(
