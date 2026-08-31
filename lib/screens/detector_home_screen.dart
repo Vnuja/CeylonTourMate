@@ -9,6 +9,7 @@ import '../widgets/mic_button.dart';
 import '../widgets/harsh_word_alert.dart';
 import '../widgets/result_card.dart';
 import '../widgets/word_highlighter.dart';
+import '../services/groq_service.dart';
 
 class DetectorHomeScreen extends StatefulWidget {
   const DetectorHomeScreen({super.key});
@@ -35,10 +36,14 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
   // Results
   bool _isAnalyzing = false;
   String _displayText = '';
+  String _translation = '';
   PredictionResult? _result;
   List<String> _harshWords = [];
   List<WordAnalysis> _wordAnalysis = [];
   bool _showAlert = false;
+  bool _isSinglishMode = false;
+
+  final GroqService _translationService = GroqService();
 
   @override
   void initState() {
@@ -103,32 +108,63 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
       _harshWords = [];
       _wordAnalysis = [];
       _showAlert = false;
+      _translation = '';
     });
 
-    // Run model inference
-    final prediction = await _model.predict(text);
+    // Auto-detect if input is Singlish (contains English letters)
+    final isSinglish = text.contains(RegExp(r'[a-zA-Z]'));
 
-    // Run harsh word detection
-    final words      = _model.tokenizer.extractWords(text);
-    final analysis   = HarshWordDetector.analyzeWords(words);
-    final detected   = HarshWordDetector.getHarshWords(words);
+    if (isSinglish) {
+      // For Singlish, we use the LLM to translate to English, translate to Sinhala, and detect hate speech
+      final singlishAnalysis = await _translationService.analyzeSinglish(text);
+      
+      setState(() {
+        _isAnalyzing = false;
+        _displayText = singlishAnalysis['sinhala'] ?? text;
+        _translation = singlishAnalysis['english'] ?? '';
+        
+        final isHate = singlishAnalysis['is_hate_speech'] == true;
+        _result = PredictionResult(
+          isHateSpeech: isHate,
+          confidence: isHate ? 0.9 : 0.1,
+          rawScore: isHate ? 0.9 : 0.1,
+          label: isHate ? 'Hate Speech' : 'Non-Hate Speech',
+        );
+        _harshWords = []; // Simplify for now, could parse words from LLM if needed
+        _wordAnalysis = [];
+        _showAlert = isHate;
+      });
+    } else {
+      // Normal Sinhala script flow
+      // Run model inference
+      final prediction = await _model.predict(text);
 
-    setState(() {
-      _isAnalyzing = false;
-      _result      = prediction;
-      _harshWords  = detected;
-      _wordAnalysis = analysis;
-      _showAlert   = (prediction?.isHateSpeech ?? false) || detected.isNotEmpty;
-    });
+      // Run harsh word detection
+      final words      = _model.tokenizer.extractWords(text);
+      final analysis   = HarshWordDetector.analyzeWords(words);
+      final detected   = HarshWordDetector.getHarshWords(words);
+
+      // Fetch English translation in parallel
+      final translated = await _translationService.translateToEnglish(text);
+
+      setState(() {
+        _isAnalyzing = false;
+        _result      = prediction;
+        _harshWords  = detected;
+        _wordAnalysis = analysis;
+        _translation  = translated;
+        _showAlert   = (prediction?.isHateSpeech ?? false) || detected.isNotEmpty;
+      });
+    }
 
     // Save to history
-    if (prediction != null) {
+    if (_result != null) {
       await HistoryStorage.save(HistoryEntry(
         id:           DateTime.now().millisecondsSinceEpoch.toString(),
         text:         text,
-        isHateSpeech: prediction.isHateSpeech,
-        confidence:   prediction.confidence,
-        harshWords:   detected,
+        isHateSpeech: _result!.isHateSpeech,
+        confidence:   _result!.confidence,
+        harshWords:   _harshWords,
         timestamp:    DateTime.now(),
         inputMode:    _inputMode,
       ));
@@ -138,6 +174,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
   void _clearResults() {
     setState(() {
       _displayText = '';
+      _translation = '';
       _result      = null;
       _harshWords  = [];
       _wordAnalysis = [];
@@ -180,7 +217,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
             // Voice mode
             if (_inputMode == 'voice') _buildVoiceSection(),
 
-            // Manual mode
+            // Manual mode (Type - handles both Sinhala and Singlish)
             if (_inputMode == 'manual') _buildManualSection(),
 
             // Analyzing spinner
@@ -197,12 +234,14 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
               ),
             ],
 
-            // Analyzed text with highlights
+            // Analyzed text with highlights and translation
             if (_displayText.isNotEmpty && !_isAnalyzing) ...[
               const SizedBox(height: 16),
               _AnalyzedTextSection(
+                displayText: _displayText,
                 wordAnalysis: _wordAnalysis,
                 harshWords: _harshWords,
+                translation: _translation,
                 onClear: _clearResults,
               ),
             ],
@@ -319,7 +358,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'ENTER SINHALA TEXT',
+          'ENTER TEXT (SINHALA OR SINGLISH)',
           style: TextStyle(
             color: CeylonSpice.textMid,
             fontSize: 11,
@@ -344,7 +383,7 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
             style: TextStyle(color: CeylonSpice.text, fontSize: 16, height: 1.6),
             cursorColor: CeylonSpice.cinnamon,
             decoration: InputDecoration(
-              hintText: 'උදා: මේ කෙනා හරිම නරකයි...',
+              hintText: 'උදා: මේ කෙනා හරිම නරකයි / Eg: me kena harima narakai...',
               hintStyle: TextStyle(color: CeylonSpice.textLight, fontSize: 15),
               filled: true,
               fillColor: CeylonSpice.surface,
@@ -387,9 +426,10 @@ class _DetectorHomeScreenState extends State<DetectorHomeScreen> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            onPressed: (!_isModelReady || !hasText)
+            onPressed: (!hasText) // Auto-detect handles model readiness if Sinhala
                 ? null
                 : () {
+                    // Show input temporarily until processed
                     setState(() => _displayText = _textController.text);
                     _runAnalysis(_textController.text);
                   },
@@ -468,7 +508,7 @@ class _ModeToggle extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    mode == 'voice' ? '🎤  Voice Input' : '⌨️  Type Text',
+                    mode == 'voice' ? '🎤 Voice' : '⌨️ Type',
                     style: TextStyle(
                       color: isActive ? CeylonSpice.coconutCream : CeylonSpice.textMid,
                       fontWeight: FontWeight.w600,
@@ -486,13 +526,17 @@ class _ModeToggle extends StatelessWidget {
 }
 
 class _AnalyzedTextSection extends StatelessWidget {
+  final String displayText;
   final List<WordAnalysis> wordAnalysis;
   final List<String> harshWords;
+  final String translation;
   final VoidCallback onClear;
 
   const _AnalyzedTextSection({
+    required this.displayText,
     required this.wordAnalysis,
     required this.harshWords,
+    required this.translation,
     required this.onClear,
   });
 
@@ -538,7 +582,41 @@ class _AnalyzedTextSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: CeylonSpice.creamDarker),
           ),
-          child: WordHighlighter(wordAnalysis: wordAnalysis),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (wordAnalysis.isEmpty)
+                Text(
+                  displayText,
+                  style: TextStyle(color: CeylonSpice.text, fontSize: 16, height: 1.5),
+                )
+              else
+                WordHighlighter(wordAnalysis: wordAnalysis),
+              if (translation.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                const Divider(height: 1, color: CeylonSpice.creamDarker),
+                const SizedBox(height: 12),
+                Text(
+                  'ENGLISH TRANSLATION',
+                  style: TextStyle(
+                    color: CeylonSpice.saffronDark,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  translation,
+                  style: TextStyle(
+                    color: CeylonSpice.textMid,
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
         if (harshWords.isNotEmpty) ...[
           const SizedBox(height: 4),
