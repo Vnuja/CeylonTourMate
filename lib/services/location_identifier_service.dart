@@ -67,7 +67,6 @@ class SimilarPlace {
 class LocationIdentifierService {
   // ── Replace with your actual OpenAI API key ──
   static const String _apiKey =
-      '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';
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
 
   static const String _prompt = '''
