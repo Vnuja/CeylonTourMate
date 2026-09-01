@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/ceylon_theme.dart';
@@ -6,12 +6,12 @@ import '../services/location_identifier_service.dart';
 
 class LocationResultScreen extends StatelessWidget {
   final PlaceResult result;
-  final File imageFile;
+  final Uint8List imageBytes;
 
   const LocationResultScreen({
     super.key,
     required this.result,
-    required this.imageFile,
+    required this.imageBytes,
   });
 
   Color get _confidenceColor {
@@ -55,7 +55,7 @@ class LocationResultScreen extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.file(imageFile, fit: BoxFit.cover),
+                  Image.memory(imageBytes, fit: BoxFit.cover),
                   // Gradient overlay
                   DecoratedBox(
                     decoration: BoxDecoration(

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +14,8 @@ class LocationCaptureScreen extends StatefulWidget {
 }
 
 class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
-  File? _selectedImage;
+  XFile? _selectedImage;
+  Uint8List? _imageBytes;
   bool _isAnalyzing = false;
   final ImagePicker _picker = ImagePicker();
   final LocationIdentifierService _service = LocationIdentifierService();
@@ -28,8 +29,10 @@ class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
         maxHeight: 1920,
       );
       if (picked != null) {
+        final bytes = await picked.readAsBytes();
         setState(() {
-          _selectedImage = File(picked.path);
+          _selectedImage = picked;
+          _imageBytes = bytes;
         });
       }
     } catch (e) {
@@ -48,19 +51,19 @@ class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
   }
 
   Future<void> _analyzeImage() async {
-    if (_selectedImage == null) return;
+    if (_imageBytes == null) return;
 
     setState(() => _isAnalyzing = true);
 
     try {
-      final result = await _service.analyzeImage(_selectedImage!);
+      final result = await _service.analyzeImageBytes(_imageBytes!);
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => LocationResultScreen(
               result: result,
-              imageFile: _selectedImage!,
+              imageBytes: _imageBytes!,
             ),
           ),
         );
@@ -143,12 +146,12 @@ class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
                       color: CeylonSpiceTheme.darkCard,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: _selectedImage != null
+                        color: _imageBytes != null
                             ? CeylonSpiceTheme.saffron.withOpacity(0.6)
                             : CeylonSpiceTheme.divider,
-                        width: _selectedImage != null ? 2 : 1,
+                        width: _imageBytes != null ? 2 : 1,
                       ),
-                      boxShadow: _selectedImage != null
+                      boxShadow: _imageBytes != null
                           ? [
                               BoxShadow(
                                 color: CeylonSpiceTheme.saffron.withOpacity(
@@ -161,11 +164,11 @@ class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
                           : [],
                     ),
                     clipBehavior: Clip.hardEdge,
-                    child: _selectedImage != null
+                    child: _imageBytes != null
                         ? Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.file(_selectedImage!, fit: BoxFit.cover),
+                              Image.memory(_imageBytes!, fit: BoxFit.cover),
                               // Overlay hint
                               Positioned(
                                 bottom: 12,
@@ -264,7 +267,7 @@ class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: (_selectedImage != null && !_isAnalyzing)
+                  onPressed: (_imageBytes != null && !_isAnalyzing)
                       ? _analyzeImage
                       : null,
                   style: ElevatedButton.styleFrom(
