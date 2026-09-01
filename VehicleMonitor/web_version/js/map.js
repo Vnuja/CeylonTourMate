@@ -1,5 +1,7 @@
 import { showSnackbar } from "./notifications.js";
 import { processPositionUpdate, targetRoute, setTargetRoute, isDeviated, plannedTowns } from "./compliance.js";
+import { db, auth } from "./firebase-config.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let map;
 let marker;
@@ -10,6 +12,8 @@ let watchId = null;
 let routePath = [];
 let lastPosition = null;
 let lastTimestamp = null;
+let lastGpsSyncTime = 0;
+let lastGpsAccuracy = null;
 let geocoder = null;
 let directionsService = null;
 let directionsRenderer = null;
@@ -61,6 +65,9 @@ export async function initMapModule() {
     return mapInitPromise;
 }
 
+// Track whether the Google Maps API is blocked/broken
+let mapsApiBlocked = false;
+
 async function initializeMap(mapElement, recenterBtn) {
     console.log("Initializing Map Module...");
     
@@ -100,6 +107,17 @@ async function initializeMap(mapElement, recenterBtn) {
             disableDefaultUI: true,
             mapId: "4504f8b37365c3ae"
         });
+
+        // Detect ApiTargetBlockedMapError or similar fatal map errors
+        google.maps.event.addListenerOnce(map, 'tilesloaded', () => {
+            // If tiles loaded, the key is valid for this referrer
+        });
+        // Suppress fatal Maps API errors so GPS tracking still works
+        window.gm_authFailure = () => {
+            mapsApiBlocked = true;
+            console.warn('[Maps] Google Maps API key blocked for this referrer. GPS tracking will continue without map rendering.');
+            showSnackbar('Map API key blocked. GPS tracking still active.', 'warning');
+        };
 
         const pin = new PinElement({
             background: "#1a73e8",
@@ -178,10 +196,10 @@ async function initializeMap(mapElement, recenterBtn) {
         throw error;
     }
 }
-
 /**
  * Start watching the device's real GPS position.
- * Uses navigator.geolocation.watchPosition for continuous updates.
+ * Uses navigator.geolocation.getCurrentPosition for an instant initial fix
+ * and navigator.geolocation.watchPosition for continuous high-accuracy updates.
  */
 function startLiveTracking() {
     if (!navigator.geolocation) {
@@ -191,19 +209,104 @@ function startLiveTracking() {
         return;
     }
 
-    showSnackbar("Acquiring GPS signal...", "info");
+    showSnackbar("Acquiring exact GPS signal from device...", "info");
 
+    // 1. Immediate high-accuracy GPS fix directly from hardware
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            console.log("Immediate GPS fix acquired:", position.coords);
+            handlePositionUpdate(position);
+        },
+        (error) => {
+            console.warn("Initial quick GPS fix warning:", error.message);
+        },
+        {
+            enableHighAccuracy: true,
+            maximumAge: 0,           // Force fresh hardware GPS measurement
+            timeout: 10000           // 10s timeout
+        }
+    );
+
+    // 2. Continuous real-time GPS stream
     watchId = navigator.geolocation.watchPosition(
         (position) => handlePositionUpdate(position),
         (error) => handlePositionError(error),
         {
             enableHighAccuracy: true,
-            maximumAge: 3000,        // Accept cached position up to 3s old
-            timeout: 15000           // Wait up to 15s for a fix
+            maximumAge: 0,           // High accuracy real-time fixes
+            timeout: 15000           // 15s timeout
         }
     );
 
     console.log("GPS watchPosition started, watchId:", watchId);
+}
+
+/**
+ * On-demand exact location grabber that can be invoked at any time.
+ */
+export function requestExactDeviceLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error("Geolocation not supported"));
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                handlePositionUpdate(position);
+                resolve(position.coords);
+            },
+            (error) => {
+                handlePositionError(error);
+                reject(error);
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 10000
+            }
+        );
+    });
+}
+
+/**
+ * Sync exact GPS position and live speed directly to Firestore active_trips.
+ */
+async function syncLiveLocationToFirebase(pos, speedKmh, heading, accuracy) {
+    if (!db || !auth || !auth.currentUser) return;
+    
+    const now = Date.now();
+    // Throttle to at most once per 2 seconds unless location moved
+    if (now - lastGpsSyncTime < 2000 && lastPosition && 
+        Math.abs(lastPosition.lat - pos.lat) < 0.00005 && 
+        Math.abs(lastPosition.lng - pos.lng) < 0.00005) {
+        return;
+    }
+    
+    lastGpsSyncTime = now;
+    lastGpsAccuracy = accuracy;
+
+    try {
+        const driverId = auth.currentUser.uid;
+        await setDoc(doc(db, "active_trips", driverId), {
+            driverId: driverId,
+            driverName: auth.currentUser.displayName || auth.currentUser.email?.split('@')[0] || 'Driver',
+            driverEmail: auth.currentUser.email || '',
+            gps: {
+                lat: pos.lat,
+                lng: pos.lng,
+                accuracy: accuracy ? Math.round(accuracy) : null,
+                heading: heading ? Math.round(heading) : null
+            },
+            speed: Math.round(speedKmh || 0),
+            timestamp: serverTimestamp(),
+            lastUpdated: new Date().toISOString()
+        }, { merge: true });
+        
+        console.log(`[Firebase] Live GPS synced: ${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)} (±${accuracy?.toFixed(0) || 0}m)`);
+    } catch (err) {
+        console.warn('[Firebase] Live GPS sync failed:', err);
+    }
 }
 
 /**
@@ -215,7 +318,7 @@ function handlePositionUpdate(position) {
 
     const newPos = { lat: latitude, lng: longitude };
 
-    console.log(`GPS Update — Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}, ` +
+    console.log(`GPS Update — Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}, ` +
                 `Speed: ${speed}, Accuracy: ${accuracy?.toFixed(1)}m`);
 
     // --- Calculate speed ---
@@ -242,29 +345,33 @@ function handlePositionUpdate(position) {
     }
 
     // --- Update marker ---
-    if (marker) {
+    if (marker && !mapsApiBlocked) {
         try {
             marker.position = newPos;
             if (marker.content?.style) {
                 marker.content.style.transform = `rotate(${rotation}deg)`;
             }
         } catch (e) {
-            // AdvancedMarkerElement can throw if the Maps API failed to load correctly
-            // (e.g. ApiTargetBlockedMapError). Suppress to keep GPS updates running.
+            mapsApiBlocked = true;
+            console.warn('[Maps] Marker update failed — Maps API appears blocked.', e.message);
         }
     }
 
     // --- Update polyline trail ---
-    if (typeof google !== 'undefined' && google.maps?.LatLng) {
-        routePath.push(new google.maps.LatLng(latitude, longitude));
-        if (polyline) {
-            try { polyline.setPath(routePath); } catch (e) { /* suppress if API broken */ }
-        }
+    if (!mapsApiBlocked && typeof google !== 'undefined' && google.maps?.LatLng) {
+        try {
+            routePath.push(new google.maps.LatLng(latitude, longitude));
+            if (polyline) {
+                try { polyline.setPath(routePath); } catch (e) { /* suppress if API broken */ }
+            }
+        } catch (e) { /* suppress if Maps API is broken */ }
     }
 
     // --- Pan map to follow ---
-    if (map) {
-        map.panTo(newPos);
+    if (map && !mapsApiBlocked) {
+        try {
+            map.panTo(newPos);
+        } catch (e) { /* suppress if Maps API is broken */ }
     }
 
     // --- Update dashboard UI ---
@@ -275,6 +382,9 @@ function handlePositionUpdate(position) {
 
     // --- Process Compliance & Geo-Fencing ---
     processPositionUpdate(newPos, speedKmh);
+
+    // --- Sync exact GPS to Firebase Firestore active_trips ---
+    syncLiveLocationToFirebase(newPos, speedKmh, rotation, accuracy);
 
     // --- Detect Sudden Brake ---
     detectSuddenBrake(speedKmh, timestamp);
@@ -552,7 +662,7 @@ async function calculateAndDisplayRoute() {
         travelMode: google.maps.TravelMode.DRIVING
     };
 
-    directionsService.route(request, (result, status) => {
+    directionsService.route(request, async (result, status) => {
         if (status === 'OK') {
             directionsRenderer.setDirections(result);
             
@@ -566,12 +676,44 @@ async function calculateAndDisplayRoute() {
             }));
             setTargetRoute(path);
 
-            console.log("Real route loaded successfully.");
+            console.log("Real Google road route loaded successfully.");
         } else {
-            console.error("Directions request failed due to " + status);
-            showSnackbar("Could not load road route. Using straight lines.", "warning");
+            console.warn("Google Directions failed (" + status + "). Attempting OpenStreetMap/OSRM road fallback...");
+            await fallbackRoadRoute();
         }
     });
+}
+
+/**
+ * Fallback road route loader using Open Source Routing Machine (OSRM)
+ * Provides full road turn coordinates without requiring Google Cloud billing.
+ */
+async function fallbackRoadRoute() {
+    try {
+        const coords = plannedTowns.map(p => `${p.lng},${p.lat}`).join(';');
+        const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data && data.routes && data.routes[0]) {
+            const coordinates = data.routes[0].geometry.coordinates; // [lng, lat]
+            const googlePoints = coordinates.map(c => new google.maps.LatLng(c[1], c[0]));
+            
+            if (plannedPolyline) {
+                plannedPolyline.setPath(googlePoints);
+                plannedPolyline.setMap(map);
+            }
+            
+            const pathObjects = coordinates.map(c => ({ lat: c[1], lng: c[0] }));
+            setTargetRoute(pathObjects);
+            console.log("OSRM fallback road route loaded successfully:", pathObjects.length, "waypoints.");
+        } else {
+            showSnackbar("Could not load road route. Using straight lines.", "warning");
+        }
+    } catch (err) {
+        console.warn("OSRM routing fallback failed:", err);
+        showSnackbar("Could not load road route. Using straight lines.", "warning");
+    }
 }
 
 /**

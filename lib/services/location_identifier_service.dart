@@ -66,7 +66,8 @@ class SimilarPlace {
 
 class LocationIdentifierService {
   // ── Replace with your actual OpenAI API key ──
-  static const String _apiKey = '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';
+  static const String _apiKey =
+      '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';
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
 
   static const String _prompt = '''
@@ -130,7 +131,8 @@ If you cannot identify the place, still return JSON but set name to "Unknown Pla
                 // FIX: image comes FIRST, then text — exactly like the notebook
                 'type': 'image_url',
                 'image_url': {
-                  'url': 'data:image/jpeg;base64,$base64Image', // always jpeg now
+                  'url':
+                      'data:image/jpeg;base64,$base64Image', // always jpeg now
                   'detail': 'high',
                 },
               },

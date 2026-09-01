@@ -2,6 +2,7 @@
 // Runs the BiLSTM ONNX model for Sinhala hate speech detection
 
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:onnxruntime/onnxruntime.dart';
 import 'package:flutter/services.dart';
 import 'tokenizer.dart';
@@ -20,6 +21,11 @@ class ModelInference {
 
   /// Initialize: load tokenizer + ONNX model
   Future<bool> load() async {
+    // ONNX Runtime is not supported on web — skip silently.
+    if (kIsWeb) {
+      print('ℹ️ ONNX model inference not supported on web. Hate speech detection disabled.');
+      return false;
+    }
     try {
       print('🔄 Starting model load...');
 
@@ -63,6 +69,8 @@ class ModelInference {
   /// Input:  float32[1][100]
   /// Output: float32[1][1]  (sigmoid score)
   Future<PredictionResult?> predict(String text) async {
+    // ONNX Runtime is not supported on web.
+    if (kIsWeb) return null;
     if (!_isLoaded || _session == null) {
       print('Model not loaded. Call load() first.');
       return null;

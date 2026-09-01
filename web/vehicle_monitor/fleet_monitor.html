@@ -83,9 +83,15 @@
                 <section class="fleet-grid-section">
                     <div class="section-header">
                         <h2>Live Fleet Status</h2>
-                        <div class="view-toggles">
-                            <button class="icon-btn active"><span class="material-symbols-rounded">grid_view</span></button>
-                            <button class="icon-btn"><span class="material-symbols-rounded">list</span></button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button id="btn-simulate-vehicle" class="action-btn" title="Simulate an active vehicle for testing and live demonstration">
+                                <span class="material-symbols-rounded">add_circle</span>
+                                <span>Add Demo Vehicle</span>
+                            </button>
+                            <div class="view-toggles">
+                                <button class="icon-btn active"><span class="material-symbols-rounded">grid_view</span></button>
+                                <button class="icon-btn"><span class="material-symbols-rounded">list</span></button>
+                            </div>
                         </div>
                     </div>
                     <div id="vehicle-grid" class="vehicle-grid">
@@ -99,17 +105,135 @@
             </div>
 
             <!-- Map View Section -->
-            <div class="content-scroll" id="map-section" style="display: none; padding: 0;">
+            <div class="content-scroll" id="map-section" style="display: none; padding: 0; position: relative;">
                 <div id="fleet-map" style="width: 100%; height: 100%;">
                     <div class="map-placeholder">
                         <span class="material-symbols-rounded">map</span>
                         <p>Initializing Fleet Map...</p>
                     </div>
                 </div>
-                <div class="map-overlay-admin">
+
+                <!-- Floating Map Toolbar -->
+                <div class="map-top-bar">
                     <div class="map-stats-pill">
                         <span class="material-symbols-rounded">sensors</span>
                         <span id="map-active-vehicles">0 Vehicles Live</span>
+                    </div>
+                    <div class="map-controls-group">
+                        <button id="map-btn-fit" class="map-ctrl-btn" title="Fit All Vehicles in View">
+                            <span class="material-symbols-rounded">fit_screen</span>
+                            <span>Fit All</span>
+                        </button>
+                        <button id="map-btn-traffic" class="map-ctrl-btn" title="Toggle Live Traffic">
+                            <span class="material-symbols-rounded">traffic</span>
+                            <span>Traffic</span>
+                        </button>
+                        <button id="map-btn-satellite" class="map-ctrl-btn" title="Toggle Satellite / Dark Mode">
+                            <span class="material-symbols-rounded">satellite_alt</span>
+                            <span>Satellite</span>
+                        </button>
+                        <button id="map-btn-toggle-list" class="map-ctrl-btn active" title="Toggle Vehicles Sidebar">
+                            <span class="material-symbols-rounded">view_sidebar</span>
+                            <span>Vehicles</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Floating Fleet List Sidebar on Map -->
+                <div id="map-fleet-drawer" class="map-fleet-drawer glass">
+                    <div class="drawer-header">
+                        <div class="drawer-title">
+                            <span class="material-symbols-rounded">directions_car</span>
+                            <h3>Fleet Vehicles</h3>
+                        </div>
+                        <span class="drawer-count" id="drawer-vehicle-count">0</span>
+                    </div>
+                    <div class="drawer-filter-tabs">
+                        <button class="filter-tab active" data-filter="all">All</button>
+                        <button class="filter-tab" data-filter="online">Online</button>
+                        <button class="filter-tab" data-filter="alert">Alerts</button>
+                    </div>
+                    <div id="map-vehicle-list" class="map-vehicle-list">
+                        <!-- Injected live vehicle list items -->
+                    </div>
+                </div>
+
+                <!-- Floating Vehicle Detailed Inspector Card on Map -->
+                <div id="map-vehicle-detail" class="map-vehicle-detail glass">
+                    <div class="detail-header">
+                        <div class="detail-driver-info">
+                            <div class="avatar Large" id="detail-avatar">V</div>
+                            <div>
+                                <h3 id="detail-name">Vehicle Name</h3>
+                                <p id="detail-sub">Driver ID: --</p>
+                            </div>
+                        </div>
+                        <button id="detail-close-btn" class="icon-btn" title="Close Details">
+                            <span class="material-symbols-rounded">close</span>
+                        </button>
+                    </div>
+
+                    <div class="detail-status-strip">
+                        <span class="status-badge safe" id="detail-status-badge">Safe</span>
+                        <div class="online-indicator-row">
+                            <span class="status-dot online" id="detail-online-dot"></span>
+                            <span id="detail-online-text" style="font-size: 0.75rem; font-weight: 600;">Active</span>
+                        </div>
+                        <span class="detail-last-seen" id="detail-last-seen">Just now</span>
+                    </div>
+
+                    <!-- Exact GPS Location Card -->
+                    <div class="detail-gps-section">
+                        <div class="section-label">
+                            <span class="material-symbols-rounded">pin_drop</span>
+                            <span>Exact GPS Coordinates</span>
+                        </div>
+                        <div class="gps-coords-box">
+                            <span class="gps-latlng" id="detail-coords">0.000000°, 0.000000°</span>
+                            <button id="detail-copy-gps" class="copy-btn" title="Copy GPS Coordinates">
+                                <span class="material-symbols-rounded">content_copy</span>
+                            </button>
+                        </div>
+                        <div class="gps-address-box">
+                            <span class="material-symbols-rounded">home_pin</span>
+                            <span id="detail-address">Resolving address...</span>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry & Route Grid -->
+                    <div class="detail-grid">
+                        <div class="detail-card-metric">
+                            <span class="metric-label">Live Speed</span>
+                            <span class="metric-value" id="detail-speed">0 km/h</span>
+                        </div>
+                        <div class="detail-card-metric">
+                            <span class="metric-label">Route Adherence</span>
+                            <span class="metric-value" id="detail-route-status">On Route</span>
+                        </div>
+                        <div class="detail-card-metric">
+                            <span class="metric-label">Deviation</span>
+                            <span class="metric-value" id="detail-deviation">0 m</span>
+                        </div>
+                        <div class="detail-card-metric">
+                            <span class="metric-label">Active Zone</span>
+                            <span class="metric-value" id="detail-zone">Main Route</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="detail-actions">
+                        <button id="detail-btn-call" class="action-btn call-action-btn" title="Initiate Live Call with Driver">
+                            <span class="material-symbols-rounded">call</span>
+                            <span>Call Driver</span>
+                        </button>
+                        <button id="detail-btn-maps" class="action-btn secondary">
+                            <span class="material-symbols-rounded">open_in_new</span>
+                            <span>Google Maps</span>
+                        </button>
+                        <button id="detail-btn-remote" class="action-btn primary">
+                            <span class="material-symbols-rounded">settings_remote</span>
+                            <span>Command</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -128,7 +252,50 @@
         </aside>
     </div>
 
-    <!-- Modals -->
+    <!-- Live Intercom / Call Modal -->
+    <div id="call-modal" class="modal">
+        <div class="modal-content glass call-modal-content">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-rounded" style="color: #3FB950;">phone_in_talk</span>
+                    <h3>Fleet Dispatch Intercom</h3>
+                </div>
+                <button class="close-modal" id="close-call-modal"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div class="modal-body call-modal-body">
+                <div class="call-avatar-wrap">
+                    <div class="call-pulse-ring"></div>
+                    <div class="avatar xlarge" id="call-avatar">D</div>
+                </div>
+                <h3 id="call-driver-name" style="margin-top: 14px; font-size: 1.25rem;">Driver Name</h3>
+                <p id="call-vehicle-id" style="color: var(--fm-text-dim); font-size: 0.85rem;">Vehicle ID: --</p>
+                <div class="call-status-badge" id="call-status-text">Calling device...</div>
+                <div class="call-timer" id="call-duration">00:00</div>
+
+                <!-- Animated Waveform -->
+                <div class="audio-waveform" id="audio-waveform">
+                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+
+                <div class="call-controls">
+                    <button class="call-ctrl-btn" id="call-btn-mute" title="Mute Microphone">
+                        <span class="material-symbols-rounded">mic</span>
+                        <span>Mute</span>
+                    </button>
+                    <button class="call-ctrl-btn end-call" id="call-btn-end" title="End Call">
+                        <span class="material-symbols-rounded">call_end</span>
+                        <span>End Call</span>
+                    </button>
+                    <button class="call-ctrl-btn" id="call-btn-speaker" title="Speaker Mode">
+                        <span class="material-symbols-rounded">volume_up</span>
+                        <span>Speaker</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remote Command Modal -->
     <div id="control-modal" class="modal">
         <div class="modal-content glass">
             <div class="modal-header">
@@ -145,6 +312,10 @@
                 </div>
 
                 <div class="command-grid">
+                    <button class="cmd-btn success" id="cmd-call-direct" style="grid-column: span 2; background: rgba(63, 185, 80, 0.18); border-color: rgba(63, 185, 80, 0.4); color: #3FB950;">
+                        <span class="material-symbols-rounded">call</span>
+                        <span>Call Driver Intercom</span>
+                    </button>
                     <button class="cmd-btn warning" data-cmd="drowsy">
                         <span class="material-symbols-rounded">warning</span>
                         <span>Wake Up Alert</span>
@@ -181,7 +352,7 @@
     <!-- Google Maps API -->
     <script>
         (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. See https://goo.gle/js-api-loading"):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-            key: "AIzaSyCQ9XwaEWDPE3YEaD00AhKMN0dplkiTWAE",
+            key: "AIzaSyA1ykcjkXXAfIc6VFNXH-AMQLao5FsPZRY",
             v: "beta"
         });
     </script>

@@ -35,22 +35,24 @@ class CeylonSpiceTheme {
         onSurface: textPrimary,
       ),
       scaffoldBackgroundColor: darkBg,
-      textTheme: GoogleFonts.latoTextTheme(ThemeData.dark().textTheme).copyWith(
+      textTheme: GoogleFonts.latoTextTheme(ThemeData.dark().textTheme).apply(
+        fontFamilyFallback: ['Noto Sans Sinhala', 'Noto Sans'],
+      ).copyWith(
         displayLarge: GoogleFonts.playfairDisplay(
           fontSize: 32, fontWeight: FontWeight.bold, color: textPrimary,
-        ),
+        ).copyWith(fontFamilyFallback: const ['Noto Sans Sinhala', 'Noto Sans']),
         displayMedium: GoogleFonts.playfairDisplay(
           fontSize: 24, fontWeight: FontWeight.bold, color: textPrimary,
-        ),
+        ).copyWith(fontFamilyFallback: const ['Noto Sans Sinhala', 'Noto Sans']),
         headlineMedium: GoogleFonts.playfairDisplay(
           fontSize: 20, fontWeight: FontWeight.w600, color: textPrimary,
-        ),
+        ).copyWith(fontFamilyFallback: const ['Noto Sans Sinhala', 'Noto Sans']),
         bodyLarge: GoogleFonts.lato(
           fontSize: 16, color: textPrimary,
-        ),
+        ).copyWith(fontFamilyFallback: const ['Noto Sans Sinhala', 'Noto Sans']),
         bodyMedium: GoogleFonts.lato(
           fontSize: 14, color: textSecondary,
-        ),
+        ).copyWith(fontFamilyFallback: const ['Noto Sans Sinhala', 'Noto Sans']),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: darkSurface,

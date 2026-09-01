@@ -133,6 +133,13 @@ const handleRemoteCommand = (type, message) => {
             showSnackbar(message, 'warning', 5000);
             stopDetection();
             break;
+        case 'incoming_call':
+            showIncomingCallDialog(message || "Fleet Operations Center is requesting a voice call.");
+            break;
+        case 'end_call':
+            closeIncomingCallDialog();
+            showSnackbar("Call ended by Fleet Dispatch.", 'info', 4000);
+            break;
         case 'clear':
             // Clear current snackbars
             const snackbars = document.querySelectorAll('.snackbar');
@@ -145,6 +152,133 @@ const handleRemoteCommand = (type, message) => {
             showSnackbar(message, 'info');
     }
 };
+
+// ── Incoming Dispatch Call Dialog for Driver ───────────────────
+let incomingCallAudio = null;
+let driverCallTimer = null;
+let driverCallSeconds = 0;
+
+function showIncomingCallDialog(message) {
+    // Remove existing if present
+    const existing = document.getElementById('driver-incoming-call-modal');
+    if (existing) existing.remove();
+
+    // Play ringing tone
+    playDriverRingTone();
+
+    // Vibrate phone
+    if (navigator.vibrate) {
+        navigator.vibrate([300, 200, 300, 200, 600]);
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'driver-incoming-call-modal';
+    modal.className = 'driver-call-overlay';
+    modal.innerHTML = `
+        <div class="driver-call-card">
+            <div class="driver-call-pulse"></div>
+            <div class="driver-call-avatar">
+                <span class="material-symbols-rounded" style="font-size: 2.2rem; color: #FFFFFF;">support_agent</span>
+            </div>
+            <h3 style="margin-top: 14px; font-size: 1.3rem; color: #FFFFFF; font-weight: 700;">Fleet Dispatch</h3>
+            <p style="color: #3FB950; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-top: 4px;" id="driver-call-status">Incoming Call...</p>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; margin: 10px 0 20px;">${message}</p>
+            
+            <div id="driver-call-timer" style="display: none; font-size: 1.4rem; font-weight: 700; color: #3FB950; margin-bottom: 18px; font-family: monospace;">00:00</div>
+
+            <div class="driver-call-actions" id="driver-call-action-row">
+                <button class="driver-call-btn decline" id="btn-driver-decline">
+                    <span class="material-symbols-rounded">call_end</span>
+                    <span>Decline</span>
+                </button>
+                <button class="driver-call-btn accept" id="btn-driver-accept">
+                    <span class="material-symbols-rounded">call</span>
+                    <span>Accept (Hands-free)</span>
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('active'), 10);
+
+    modal.querySelector('#btn-driver-decline').onclick = () => {
+        closeIncomingCallDialog();
+        showSnackbar("Call declined", 'info');
+    };
+
+    modal.querySelector('#btn-driver-accept').onclick = () => {
+        stopDriverRingTone();
+        const statusText = modal.querySelector('#driver-call-status');
+        const timerEl = modal.querySelector('#driver-call-timer');
+        const actionRow = modal.querySelector('#driver-call-action-row');
+
+        if (statusText) statusText.innerText = "🎙️ Intercom Connected";
+        if (timerEl) timerEl.style.display = "block";
+
+        driverCallSeconds = 0;
+        clearInterval(driverCallTimer);
+        driverCallTimer = setInterval(() => {
+            driverCallSeconds++;
+            const m = String(Math.floor(driverCallSeconds / 60)).padStart(2, '0');
+            const s = String(driverCallSeconds % 60).padStart(2, '0');
+            if (timerEl) timerEl.innerText = `${m}:${s}`;
+        }, 1000);
+
+        if (actionRow) {
+            actionRow.innerHTML = `
+                <button class="driver-call-btn decline" style="width: 100%; max-width: 220px;" id="btn-driver-hangup">
+                    <span class="material-symbols-rounded">call_end</span>
+                    <span>End Intercom</span>
+                </button>
+            `;
+            modal.querySelector('#btn-driver-hangup').onclick = () => {
+                closeIncomingCallDialog();
+            };
+        }
+    };
+}
+
+function closeIncomingCallDialog() {
+    stopDriverRingTone();
+    clearInterval(driverCallTimer);
+    const modal = document.getElementById('driver-incoming-call-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+function playDriverRingTone() {
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        incomingCallAudio = new AudioCtx();
+
+        const osc = incomingCallAudio.createOscillator();
+        const gain = incomingCallAudio.createGain();
+        osc.connect(gain);
+        gain.connect(incomingCallAudio.destination);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(520, incomingCallAudio.currentTime);
+        
+        gain.gain.setValueAtTime(0.2, incomingCallAudio.currentTime);
+        gain.gain.setValueAtTime(0.01, incomingCallAudio.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, incomingCallAudio.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.01, incomingCallAudio.currentTime + 1.2);
+
+        osc.start(incomingCallAudio.currentTime);
+        osc.stop(incomingCallAudio.currentTime + 2.5);
+    } catch(e) {}
+}
+
+function stopDriverRingTone() {
+    if (incomingCallAudio) {
+        try { incomingCallAudio.close(); } catch(e){}
+        incomingCallAudio = null;
+    }
+}
 
 
 /**

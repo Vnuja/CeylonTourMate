@@ -81,14 +81,14 @@ const SYNC_INTERVAL_MS = 5000; // Sync every 5s during normal operation
 /**
  * Send current telemetry and driver status to Firebase
  */
-async function syncTelemetryToFirebase(status, confidence) {
+async function syncTelemetryToFirebase(status, confidence, eyeState = 'OPEN', ear = 0.30) {
     if (!db || !auth.currentUser) return;
 
     const now = Date.now();
-    const isAlert = status === 'Drowsy' || status === 'Warning';
+    const isAlert = status === 'Drowsy' || status === 'Warning' || eyeState === 'CLOSED';
     
-    // Only sync if interval passed OR it's a critical alert
-    if (!isAlert && (now - lastSyncTime < SYNC_INTERVAL_MS)) return;
+    // Sync if interval passed (3s) OR it's a critical alert
+    if (!isAlert && (now - lastSyncTime < 3000)) return;
     lastSyncTime = now;
 
     try {
@@ -101,12 +101,14 @@ async function syncTelemetryToFirebase(status, confidence) {
             driverName: auth.currentUser.displayName || auth.currentUser.email?.split('@')[0] || 'Driver',
             driverEmail: auth.currentUser.email || '',
             status: status,
+            eyeState: eyeState,
+            ear: typeof ear === 'number' ? parseFloat(ear.toFixed(3)) : 0.30,
             confidence: Math.round(confidence * 100),
             gps: gps ? {
                 lat: gps.lat,
                 lng: gps.lng
-            } : null,
-            speed: Math.round(speed),
+            } : { lat: 6.9271, lng: 79.8612 }, // Fallback to Colombo if GPS not enabled in browser
+            speed: Math.round(speed || 0),
             timestamp: serverTimestamp(),
             lastUpdated: new Date().toISOString()
         };
@@ -114,21 +116,18 @@ async function syncTelemetryToFirebase(status, confidence) {
         // Update the driver's current status document
         await setDoc(doc(db, "active_trips", driverId), telemetryData, { merge: true });
         
-        console.log(`[Firebase] Telemetry synced: ${status} at ${speed.toFixed(0)} km/h`);
-        
         // If it's a critical alert, also log to an alert history collection
         if (isAlert) {
             const alertId = `${driverId}_${now}`;
             await setDoc(doc(db, "alerts", alertId), {
                 ...telemetryData,
-                type: 'drowsiness_alert'
+                type: eyeState === 'CLOSED' ? 'eye_closure_alert' : 'drowsiness_alert'
             });
         }
 
     } catch (err) {
         console.error('[Firebase] Sync failed:', err);
-        if (err.code === 'permission-denied' || err.message.includes('API has not been used')) {
-            // Only show this once or throttle it
+        if (err.code === 'permission-denied' || err.message?.includes('API has not been used')) {
             if (now - lastAlertTime > 60000) { 
                 showSnackbar("Telemetry Sync: Firestore API not enabled. Monitoring continues locally.", "error", 5000);
                 lastAlertTime = now;
@@ -372,8 +371,17 @@ async function runDetection() {
             eyesClosedStartTime = null;
         }
 
-        // Update status
         let currentStatus = 'Active';
+        const isEyesClosed = result?.eyeState === 'CLOSED' || (result?.ear && result.ear < CONFIG.EAR_THRESHOLD);
+        const eyeStateStr = isEyesClosed ? 'CLOSED' : 'OPEN';
+
+        // Update driver UI eye state chip if present
+        const eyeChipEl = document.getElementById('drowsy-eye-state');
+        if (eyeChipEl) {
+            eyeChipEl.innerText = eyeStateStr === 'CLOSED' ? 'Closed' : 'Open';
+            eyeChipEl.style.color = eyeStateStr === 'CLOSED' ? '#F85149' : '#3FB950';
+        }
+
         if (isNoFace) {
             if (noFaceCount >= NO_FACE_FRAMES_THRESHOLD) {
                 updateStatus('warning', 'Face not detected!');
@@ -385,16 +393,16 @@ async function runDetection() {
         } else if (isDistracted) {
             updateStatus('warning', 'Please focus on the road!');
             currentStatus = 'Distracted';
-        } else if (isDrowsy) {
-            updateStatus('warning', 'Drowsiness detected!');
-            currentStatus = 'Drowsy';
+        } else if (isDrowsy || isEyesClosed) {
+            updateStatus('warning', isEyesClosed ? 'Eyes Closed Detected!' : 'Drowsiness detected!');
+            currentStatus = isEyesClosed ? 'Drowsy' : 'Warning';
         } else {
             updateStatus('active', 'Monitoring...');
             currentStatus = 'Safe';
         }
 
-        // Firebase Sync
-        syncTelemetryToFirebase(currentStatus, smoothedConfidence);
+        // Firebase Sync with eyeState and EAR
+        syncTelemetryToFirebase(currentStatus, smoothedConfidence, eyeStateStr, result?.ear || 0.30);
 
         // --- IMPROVEMENT: GPU Memory Cleanup (especially for iPhone) ---
         if (typeof tf !== 'undefined') {
@@ -589,10 +597,13 @@ async function runModelInference() {
 
     console.log(`[Drowsiness] EAR: ${currentEAR.toFixed(3)}, CNN: ${avgDrowsy.toFixed(2)}, Pose P: ${headPose.pitch.toFixed(2)}, Smoothed: ${smoothedConfidence.toFixed(2)}`);
 
+    const isClosed = currentEAR < CONFIG.EAR_THRESHOLD || avgDrowsy > 0.65;
+
     return {
         isDrowsy: isHybridDrowsy,
         confidence: smoothedConfidence,
-        ear: currentEAR
+        ear: currentEAR,
+        eyeState: isClosed ? 'CLOSED' : 'OPEN'
     };
 }
 
