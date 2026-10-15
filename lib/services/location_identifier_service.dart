@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
@@ -103,17 +102,14 @@ If you cannot identify the place, still return JSON but set name to "Unknown Pla
     return Uint8List.fromList(img.encodeJpg(decoded, quality: 90));
   }
 
-  Future<PlaceResult> analyzeImage(File imageFile) async {
-    // 1. Read raw bytes
-    final rawBytes = await imageFile.readAsBytes();
-
-    // 2. Convert to JPEG on a background isolate (matches notebook PIL.Image → JPEG)
+  Future<PlaceResult> analyzeImageBytes(Uint8List rawBytes) async {
+    // 1. Convert to JPEG on a background isolate (matches notebook PIL.Image → JPEG)
     final jpegBytes = await compute(_convertToJpeg, rawBytes);
 
-    // 3. Base64 encode — always jpeg now, same as notebook
+    // 2. Base64 encode — always jpeg now, same as notebook
     final base64Image = base64Encode(jpegBytes);
 
-    // 4. Call GPT-4o mini with the same payload structure as the notebook
+    // 3. Call GPT-4o mini with the same payload structure as the notebook
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: {
@@ -146,7 +142,7 @@ If you cannot identify the place, still return JSON but set name to "Unknown Pla
       }),
     );
 
-    // 5. FIX: check HTTP status FIRST and throw a meaningful error
+    // 4. Check HTTP status FIRST and throw a meaningful error
     if (response.statusCode != 200) {
       throw Exception(
           'OpenAI API error ${response.statusCode}: ${response.body}');
@@ -157,7 +153,7 @@ If you cannot identify the place, still return JSON but set name to "Unknown Pla
         (data['choices'] as List).first['message']['content'] as String;
     text = text.trim();
 
-    // 6. Strip markdown fences if present (same logic as notebook)
+    // 5. Strip markdown fences if present (same logic as notebook)
     if (text.startsWith('```')) {
       final parts = text.split('```');
       text = parts.length > 1 ? parts[1] : text;
@@ -166,5 +162,13 @@ If you cannot identify the place, still return JSON but set name to "Unknown Pla
 
     final json = jsonDecode(text.trim()) as Map<String, dynamic>;
     return PlaceResult.fromJson(json);
+  }
+
+  Future<PlaceResult> analyzeImage(dynamic imageFile) async {
+    if (imageFile is Uint8List) {
+      return analyzeImageBytes(imageFile);
+    }
+    final rawBytes = await (imageFile as dynamic).readAsBytes();
+    return analyzeImageBytes(rawBytes is Uint8List ? rawBytes : Uint8List.fromList(rawBytes as List<int>));
   }
 }
