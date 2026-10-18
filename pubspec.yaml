@@ -61,6 +61,8 @@ flutter:
   # then uncomment:
   #
   assets:
-    - assets/images/            
+    - assets/images/
     - assets/model/sinhala_hate_speech_model.onnx
     - assets/model/word_index.json
+    - assets/model/tourism_arrival_model.json
+    - assets/model/fraud_review_model.json

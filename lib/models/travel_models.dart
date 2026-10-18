@@ -10,6 +10,10 @@ class TravelPreferences {
   final String travelDate;       // ISO date YYYY-MM-DD
   final String travelMonth;
   final int tripDays;
+  // Traveller's current location: one of the 25 Sri Lankan districts, or
+  // 'Outside Sri Lanka'. When a district is given, recommendations are
+  // filtered/ranked to destinations near that district (notebook parity).
+  final String currentLocation;
 
   TravelPreferences({
     required this.groupType,
@@ -22,6 +26,7 @@ class TravelPreferences {
     required this.travelDate,
     required this.travelMonth,
     required this.tripDays,
+    this.currentLocation = 'Outside Sri Lanka',
   });
 
   Map<String, dynamic> toJson() => {
@@ -35,6 +40,7 @@ class TravelPreferences {
     'travel_date': travelDate,
     'travel_month': travelMonth,
     'trip_days': tripDays,
+    'current_location': currentLocation,
   };
 }
 
@@ -223,45 +229,92 @@ class TravelRecommendation {
     return result;
   }
 
-  // Map destinations to curated Unsplash images
-  static String? _getDestinationImage(String destination) {
-    const imageMap = {
-      'Sigiriya': 'assets/images/sigiriya.jpg',
-      'Sigiriya Rock': 'assets/images/sigiriya2.jpg',
-      'Ella': 'assets/images/ella.jpg',
-      'Galle Fort': 'assets/images/gallefort2.jpg',
-      'Galle': 'assets/images/gallefort.jpg',
-      'Kandy': 'assets/images/kandy.jpg',
-      'Temple of the Tooth Kandy': 'assets/images/kandy.jpg',
-      'Nuwara Eliya': 'assets/images/nuwaraeliya.jpg',
-      'Yala National Park': 'assets/images/yala.jpg',
-      'Yala': 'assets/images/yala2.jpg',
-      'Mirissa': 'assets/images/mirissa.jpg',
-      'Bentota': 'assets/images/benthota.jpg',
-      'Colombo': 'assets/images/colombo.jpg',
-      'Dambulla Cave Temple': 'assets/images/dambulla.jpg',
-      'Dambulla': 'assets/images/dambulla.jpg',
-      'Anuradhapura': 'assets/images/anuradhapura.jpg',
-      'Polonnaruwa': 'assets/images/polonnaruwa.jpg',
-      'Trincomalee': 'assets/images/trincomalee.jpg',
-      'Arugam Bay': 'assets/images/ArugamBay.jpg',
-      'Udawalawe National Park': 'assets/images/Udawalawe.jpg',
-      'Wilpattu National Park': 'assets/images/Wilpattu.jpg',
-      'Horton Plains': 'assets/images/HortonPlains.jpg',
-      'Knuckles Mountain Range': 'assets/images/Knuckles.jpg',
-      'Jaffna': 'assets/images/Jaffna.jpg',
-      'Unawatuna': 'assets/images/Unawatuna.jpg',
-    };
+  /// Public helpers so other code (e.g. the recommender's local-destination
+  /// override) can resolve the same image/rating a parsed recommendation uses.
+  static String? imageFor(String destination) =>
+      _getDestinationImage(destination);
+  static double ratingFor(String destination) =>
+      _getDestinationRating(destination);
 
-    // Fuzzy match
-    for (final entry in imageMap.entries) {
-      if (destination.toLowerCase().contains(entry.key.toLowerCase()) ||
-          entry.key.toLowerCase().contains(destination.toLowerCase().split(' ').first)) {
-        return entry.value;
-      }
-    }
-    // Default Sri Lanka
-    return 'https://images.unsplash.com/photo-1568454537842-d933259bb258?w=800';
+  TravelRecommendation copyWith({
+    int? rank,
+    String? destination,
+    String? imageUrl,
+    double? rating,
+  }) {
+    return TravelRecommendation(
+      rank: rank ?? this.rank,
+      destination: destination ?? this.destination,
+      weatherSuitability: weatherSuitability,
+      packageName: packageName,
+      packageCostPerPerson: packageCostPerPerson,
+      activities: activities,
+      accommodation: accommodation,
+      totalCostPerPerson: totalCostPerPerson,
+      whySuitable: whySuitable,
+      imageUrl: imageUrl ?? this.imageUrl,
+      rating: rating ?? this.rating,
+      hotelOptions: hotelOptions,
+      transportInfo: transportInfo,
+      entryFees: entryFees,
+    );
+  }
+
+  // Curated local asset images, keyed by the EXACT destination name (plus a
+  // few known aliases). Returns null when we don't have a good local image for
+  // the destination, so the caller can fetch a relevant one online instead.
+  //
+  // Matching is intentionally strict (exact / alias only). The old loose
+  // substring match caused wrong images — e.g. "Galle Face Green" matching
+  // "Galle Fort" and showing a fort.
+  static const Map<String, String> _assetImages = {
+    'sigiriya': 'assets/images/sigiriya.jpg',
+    'sigiriya rock': 'assets/images/sigiriya2.jpg',
+    'sigiriya rock fortress': 'assets/images/sigiriya2.jpg',
+    'ella': 'assets/images/ella.jpg',
+    'galle fort': 'assets/images/gallefort2.jpg',
+    'galle': 'assets/images/gallefort.jpg',
+    'kandy': 'assets/images/kandy.jpg',
+    'temple of the tooth kandy': 'assets/images/kandy.jpg',
+    'temple of the tooth': 'assets/images/kandy.jpg',
+    'nuwara eliya': 'assets/images/nuwaraeliya.jpg',
+    'yala national park': 'assets/images/yala.jpg',
+    'yala': 'assets/images/yala2.jpg',
+    'mirissa': 'assets/images/mirissa.jpg',
+    'bentota': 'assets/images/benthota.jpg',
+    'colombo': 'assets/images/colombo.jpg',
+    'dambulla cave temple': 'assets/images/dambulla.jpg',
+    'dambulla': 'assets/images/dambulla.jpg',
+    'anuradhapura': 'assets/images/anuradhapura.jpg',
+    'polonnaruwa': 'assets/images/polonnaruwa.jpg',
+    'trincomalee': 'assets/images/trincomalee.jpg',
+    'arugam bay': 'assets/images/ArugamBay.jpg',
+    'udawalawe national park': 'assets/images/Udawalawe.jpg',
+    'wilpattu national park': 'assets/images/Wilpattu.jpg',
+    'horton plains': 'assets/images/HortonPlains.jpg',
+    'knuckles mountain range': 'assets/images/Knuckles.jpg',
+    'jaffna': 'assets/images/Jaffna.jpg',
+    'unawatuna': 'assets/images/Unawatuna.jpg',
+  };
+
+  static String _normalizeName(String s) => s
+      .toLowerCase()
+      .replaceAll(RegExp(r'\s*\(.*?\)'), '') // drop "(Colombo)" etc.
+      .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+
+  /// Returns a curated LOCAL asset path for [destination], or null when we
+  /// don't have one (caller should then resolve a relevant online image).
+  static String? _getDestinationImage(String destination) {
+    final norm = _normalizeName(destination);
+    if (_assetImages.containsKey(norm)) return _assetImages[norm];
+    // Allow a leading alias phrase only when it's the FULL first segment before
+    // a comma (e.g. "Sigiriya, Central Province" → "sigiriya"), never a loose
+    // substring.
+    final firstSeg = _normalizeName(destination.split(',').first);
+    if (_assetImages.containsKey(firstSeg)) return _assetImages[firstSeg];
+    return null;
   }
 
   static double _getDestinationRating(String destination) {

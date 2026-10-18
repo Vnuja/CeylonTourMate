@@ -1,16 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/openrouter_config.dart';
 import '../models/chat_message.dart';
 
 class GroqService {
-  // ── Replace with your actual OpenRouter API key ──
-  static const String _apiKey = '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';
-  static const String _baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
-  static const String _model = 'openai/gpt-4o';
-
-  // Optional but recommended by OpenRouter for attribution/rankings
-  static const String _siteUrl = 'https://your-app-domain-or-repo.example';
-  static const String _siteName = 'Serendib';
+  // OpenRouter config (key, endpoint, model, attribution) lives in one place:
+  // OpenRouterConfig.
+  static const String _baseUrl = OpenRouterConfig.chatCompletionsUrl;
+  static const String _model = OpenRouterConfig.defaultModel;
 
   static const String _systemPrompt = '''
 You are Serendib, an AI Virtual Tour Guide EXCLUSIVELY for Sri Lanka — the Pearl of the Indian Ocean.
@@ -48,18 +45,12 @@ If asked about destinations outside Sri Lanka, say:
             .map((m) => {
                   'role': m.role == MessageRole.user ? 'user' : 'assistant',
                   'content': m.content,
-                })
-            .toList(),
+                }),
       ];
 
       final response = await http.post(
         Uri.parse(_baseUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_apiKey',
-          'HTTP-Referer': _siteUrl, // optional, OpenRouter uses this for ranking
-          'X-Title': _siteName, // optional, shows up in OpenRouter dashboard
-        },
+        headers: OpenRouterConfig.authHeaders(),
         body: jsonEncode({
           'model': _model,
           'messages': messages,

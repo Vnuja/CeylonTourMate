@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -51,12 +53,12 @@ class _LocationCaptureScreenState extends State<LocationCaptureScreen> {
   }
 
   Future<void> _analyzeImage() async {
-    if (_imageBytes == null) return;
+    if (_imageBytes == null || _selectedImage == null) return;
 
     setState(() => _isAnalyzing = true);
 
     try {
-      final result = await _service.analyzeImageBytes(_imageBytes!);
+      final result = await _service.analyzeImage(File(_selectedImage!.path));
       if (mounted) {
         Navigator.push(
           context,

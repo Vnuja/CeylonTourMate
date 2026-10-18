@@ -1,18 +1,17 @@
 // lib/services/food_identifier_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/openrouter_config.dart';
 import '../models/food_identification_result.dart';
 
 /// Calls the OpenRouter vision API to identify Sri Lankan food in a photo.
 /// Mirrors the Food Scanner web-app's CNN → LLaVA → LLaMA pipeline, but
 /// implemented as a single cloud vision call so it works on mobile.
 class FoodIdentifierService {
-  // Same OpenRouter key already used by GroqService
-  static const String _apiKey =
-      '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';
-  static const String _baseUrl =
-      'https://openrouter.ai/api/v1/chat/completions';
-  static const String _model = 'openai/gpt-4o'; // vision-capable
+  // OpenRouter config (key, endpoint, model) lives in one place:
+  // OpenRouterConfig.
+  static const String _baseUrl = OpenRouterConfig.chatCompletionsUrl;
+  static const String _model = OpenRouterConfig.defaultModel; // vision-capable
 
   // The 11 class names the Food Scanner was trained on
   static const List<String> _knownFoods = [
@@ -91,12 +90,7 @@ If the image does not appear to contain food, set food_name to "Not a food item"
 
     final response = await http.post(
       Uri.parse(_baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-        'HTTP-Referer': 'https://ceylontourmate.app',
-        'X-Title': 'CeylonTourMate',
-      },
+      headers: OpenRouterConfig.authHeaders(),
       body: body,
     );
 

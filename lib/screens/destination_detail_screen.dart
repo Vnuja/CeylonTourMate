@@ -10,6 +10,7 @@ import '../theme/app_theme.dart';
 import '../models/travel_models.dart';
 import '../providers/auth_provider.dart' as app_auth;
 import '../services/feedback_service.dart';
+import '../services/fraud_review_service.dart';
 
 class DestinationDetailScreen extends StatefulWidget {
   final TravelRecommendation recommendation;
@@ -29,6 +30,7 @@ class DestinationDetailScreen extends StatefulWidget {
 class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   bool _isSaved = false;
   final FeedbackService _feedbackService = FeedbackService();
+  final FraudReviewService _fraudService = FraudReviewService.instance;
   int _userRating = 0;
   bool _submittingRating = false;
   final TextEditingController _commentController = TextEditingController();
@@ -143,12 +145,33 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     'https://images.unsplash.com/photo-1588598198321-9735fd6a1d0a?w=700',
   ];
 
+  /// Lowercase word tokens of a place name (length > 1), used for safe
+  /// whole-word matching instead of loose substring matching.
+  static Set<String> _nameWords(String s) => s
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
+      .split(RegExp(r'\s+'))
+      .where((w) => w.length > 1)
+      .toSet();
+
   List<String> get _images {
-    final dest = widget.recommendation.destination.toLowerCase();
+    final destWords = _nameWords(widget.recommendation.destination);
+    // Match a curated gallery only when ALL of its key words appear as whole
+    // words in the destination. This maps "Galle Fort" → Galle and
+    // "Temple of the Tooth Kandy" → Kandy, while NOT matching "Tangalle"→Galle
+    // or "Dickwella"→Ella (the old substring bug that showed wrong images).
     for (final entry in _galleryImages.entries) {
-      if (dest.contains(entry.key.toLowerCase())) {
+      final keyWords = _nameWords(entry.key);
+      if (keyWords.isNotEmpty && keyWords.every(destWords.contains)) {
         return entry.value;
       }
+    }
+    // No curated gallery → use the image already resolved for this destination
+    // (a correct Wikipedia photo for the place, or its local asset), so the
+    // gallery shows the right place instead of generic stock photos.
+    final hero = widget.recommendation.imageUrl;
+    if (hero != null && hero.trim().isNotEmpty) {
+      return [hero];
     }
     return _fallbackImages;
   }
@@ -330,6 +353,30 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
 
     setState(() => _submittingRating = true);
     try {
+      // ── Fraud / fake-review screening ──────────────────────────────────
+      // Run the typed comment through the on-device fraud detector so only
+      // genuine reviews get posted. A comment classified as deceptive is
+      // rejected with a "Fraud Review" notice and never published. If the
+      // detector itself fails to load (e.g. asset issue), we fail OPEN —
+      // a screening hiccup must never block a genuine review.
+      final comment = _commentController.text.trim();
+      if (comment.isNotEmpty) {
+        FraudReviewResult? verdict;
+        try {
+          await _fraudService.load();
+          verdict = _fraudService.classify(comment);
+        } catch (e) {
+          debugPrint('Fraud screening skipped (model error): $e');
+        }
+        if (verdict != null && verdict.isFraud) {
+          if (mounted) {
+            setState(() => _submittingRating = false);
+            _showFraudReviewDialog(verdict);
+          }
+          return;
+        }
+      }
+
       final displayName = context
           .read<app_auth.AuthProvider>()
           .firebaseUser
@@ -377,6 +424,66 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     } finally {
       if (mounted) setState(() => _submittingRating = false);
     }
+  }
+
+  /// Shown when the fraud detector flags the typed comment as fake/deceptive.
+  /// The review is NOT submitted — the user can edit and try again.
+  void _showFraudReviewDialog(FraudReviewResult verdict) {
+    final pct = (verdict.confidence * 100).toStringAsFixed(0);
+    // Rule-based rejections (phone number, link, promo wording…) explain why
+    // instead of quoting an ML confidence that doesn't reflect the decision.
+    final why = verdict.reasons
+        .map((r) => r.split(':').first.trim())
+        .toSet()
+        .join(', ');
+    final message = verdict.decidedByRules && why.isNotEmpty
+        ? "This looks like promotional or spam content ($why), so it wasn't "
+            'posted. Reviews should describe your own experience — please '
+            'remove contact details and promotions, then try again.'
+        : "This review looks fake or deceptive, so it wasn't posted "
+            '($pct% confidence). Genuine, first-hand reviews help other '
+            'travellers — please rewrite it in your own words and try again.';
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.cardMid,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.gpp_bad_rounded, color: AppTheme.errorRed),
+            const SizedBox(width: 10),
+            Text(
+              'Fraud Review',
+              style: GoogleFonts.playfairDisplay(
+                color: AppTheme.coconutCream,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: GoogleFonts.nunito(
+            color: AppTheme.coconutCream,
+            fontSize: 14,
+            height: 1.45,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            style: TextButton.styleFrom(foregroundColor: AppTheme.saffron),
+            child: Text(
+              'Edit review',
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadSavedState() async {

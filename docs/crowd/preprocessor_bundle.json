@@ -1,0 +1,209 @@
+{
+  "tourism_scaler": {
+    "mean": [
+      8.73,
+      27.315,
+      158.85966666666667,
+      -8.684411214845669e-18,
+      -8.43769498715119e-18,
+      0.36,
+      0.03999999958090484
+    ],
+    "scale": [
+      13.141025243277042,
+      2.8257992969541674,
+      127.27720039303539,
+      0.7071067748408895,
+      0.7071067748408895,
+      0.48000000000000004,
+      0.05360779352463035
+    ],
+    "var": [
+      172.68654444444442,
+      7.985141666666666,
+      16199.485739888887,
+      0.4999999910258844,
+      0.4999999910258844,
+      0.23040000000000005,
+      0.002873795526579399
+    ],
+    "feature_names": [
+      "inflation for the month of the year",
+      "average temperature within the month",
+      "average rainfall within the month",
+      "month_sin",
+      "month_cos",
+      "is_wet_zone",
+      "district_base_weight"
+    ]
+  },
+  "district_to_idx": {
+    "Ampara": 0,
+    "Anuradhapura": 1,
+    "Badulla": 2,
+    "Batticaloa": 3,
+    "Colombo": 4,
+    "Galle": 5,
+    "Gampaha": 6,
+    "Hambantota": 7,
+    "Jaffna": 8,
+    "Kalutara": 9,
+    "Kandy": 10,
+    "Kegalle": 11,
+    "Kilinochchi": 12,
+    "Kurunegala": 13,
+    "Mannar": 14,
+    "Matale": 15,
+    "Matara": 16,
+    "Monaragala": 17,
+    "Mullaitivu": 18,
+    "Nuwara Eliya": 19,
+    "Polonnaruwa": 20,
+    "Puttalam": 21,
+    "Ratnapura": 22,
+    "Trincomalee": 23,
+    "Vavuniya": 24
+  },
+  "idx_to_district": {
+    "0": "Ampara",
+    "1": "Anuradhapura",
+    "2": "Badulla",
+    "3": "Batticaloa",
+    "4": "Colombo",
+    "5": "Galle",
+    "6": "Gampaha",
+    "7": "Hambantota",
+    "8": "Jaffna",
+    "9": "Kalutara",
+    "10": "Kandy",
+    "11": "Kegalle",
+    "12": "Kilinochchi",
+    "13": "Kurunegala",
+    "14": "Mannar",
+    "15": "Matale",
+    "16": "Matara",
+    "17": "Monaragala",
+    "18": "Mullaitivu",
+    "19": "Nuwara Eliya",
+    "20": "Polonnaruwa",
+    "21": "Puttalam",
+    "22": "Ratnapura",
+    "23": "Trincomalee",
+    "24": "Vavuniya"
+  },
+  "district_weight_map": {
+    "Ampara": 0.0019272162934096946,
+    "Anuradhapura": 0.02697783147179015,
+    "Badulla": 0.046247650206193675,
+    "Batticaloa": 0.006744333554327432,
+    "Colombo": 0.21287236990561897,
+    "Galle": 0.16039653629577663,
+    "Gampaha": 0.09405944989873412,
+    "Hambantota": 0.034685773172822426,
+    "Jaffna": 0.005781151625748661,
+    "Kalutara": 0.06732676488579237,
+    "Kandy": 0.11683221333865254,
+    "Kegalle": 0.0024756879853159333,
+    "Kilinochchi": 0.0005780228153142162,
+    "Kurunegala": 0.007707870664677933,
+    "Mannar": 0.0009634660739961551,
+    "Matale": 0.05202873079558799,
+    "Matara": 0.04455464077306307,
+    "Monaragala": 0.002890256149279773,
+    "Mullaitivu": 0.0005780228153142162,
+    "Nuwara Eliya": 0.06435666387422757,
+    "Polonnaruwa": 0.012525414143721747,
+    "Puttalam": 0.017343241768182943,
+    "Ratnapura": 0.003960134682086386,
+    "Trincomalee": 0.015416096511127596,
+    "Vavuniya": 0.0007704602992378013
+  },
+  "wet_zone_districts": [
+    "Colombo",
+    "Galle",
+    "Gampaha",
+    "Kalutara",
+    "Kandy",
+    "Kegalle",
+    "Matara",
+    "Nuwara Eliya",
+    "Ratnapura"
+  ],
+  "continuous_cols": [
+    "inflation for the month of the year",
+    "average temperature within the month",
+    "average rainfall within the month",
+    "month_sin",
+    "month_cos",
+    "is_wet_zone",
+    "district_base_weight"
+  ],
+  "all_districts": [
+    "Ampara",
+    "Anuradhapura",
+    "Badulla",
+    "Batticaloa",
+    "Colombo",
+    "Galle",
+    "Gampaha",
+    "Hambantota",
+    "Jaffna",
+    "Kalutara",
+    "Kandy",
+    "Kegalle",
+    "Kilinochchi",
+    "Kurunegala",
+    "Mannar",
+    "Matale",
+    "Matara",
+    "Monaragala",
+    "Mullaitivu",
+    "Nuwara Eliya",
+    "Polonnaruwa",
+    "Puttalam",
+    "Ratnapura",
+    "Trincomalee",
+    "Vavuniya"
+  ],
+  "climate_scaler": {
+    "mean": [
+      27.31499996503194,
+      4.703391683896383
+    ],
+    "scale": [
+      2.8257992945974184,
+      0.9105202628120914
+    ],
+    "var": [
+      7.985141653347268,
+      0.8290471489914
+    ],
+    "target_names": [
+      "temperature_C",
+      "log1p(rainfall_mm)"
+    ]
+  },
+  "climate_feat_cols": [
+    "month_sin",
+    "month_cos",
+    "month_sin2",
+    "month_cos2",
+    "is_wet_raw"
+  ],
+  "inflation_config": {
+    "ar_coef": [
+      1.519150247838336,
+      -0.3605615695478019,
+      -0.2013296143092355
+    ],
+    "ar_intercept": 0.36821415690750214,
+    "n_lags": 3,
+    "persistence": 0.9,
+    "target": 5.450000047683716,
+    "last_known_year": 2024,
+    "last_known_month": 12,
+    "last_known_value": -1.7000000476837158,
+    "clip_min": -5.0,
+    "clip_max": 100.0
+  }
+}

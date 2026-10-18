@@ -16,6 +16,7 @@ class VoiceService {
   Function(String)? onSttResult;
   Function(String)? onSttPartialResult;
   Function()? onSttDone;
+  Function(String)? onSttError;
   Function()? onTtsDone;
 
   Future<void> init() async {
@@ -36,9 +37,19 @@ class VoiceService {
 
     // ── STT Setup ──────────────────────────────────────────
     _sttAvailable = await _stt.initialize(
-      onError: (error) => print('STT Error: $error'),
+      onError: (error) {
+        // An error (e.g. error_no_match when nothing is recognised) must also
+        // clear the listening state, otherwise the mic appears stuck "on".
+        _sttListening = false;
+        onSttError?.call(error.errorMsg);
+        onSttDone?.call();
+      },
       onStatus: (status) {
-        if (status == 'done' || status == 'notListening') {
+        // Both 'notListening' and 'done' end the session for the UI, so the mic
+        // always turns off (no "always listening"). Dropping the result is not
+        // a concern: the screen applies it via the saved _listeningField even if
+        // the mic UI was already cleared by an early 'notListening'.
+        if (status == 'notListening' || status == 'done') {
           _sttListening = false;
           onSttDone?.call();
         }
@@ -128,21 +139,41 @@ class VoiceService {
   bool get isListening => _sttListening;
 
   Future<void> startListening() async {
-    if (!_sttAvailable || _sttListening) return;
+    if (!_sttAvailable) return;
+
+    // Make sure any previous session is fully finished before starting a new
+    // one — this is what lets voice be used repeatedly (not just once).
+    if (_stt.isListening) {
+      await _stt.stop();
+    }
+    // Small settle so the platform recognizer is ready for the next listen().
+    await Future.delayed(const Duration(milliseconds: 150));
+
     _sttListening = true;
 
     await _stt.listen(
       onResult: (SpeechRecognitionResult result) {
         if (result.finalResult) {
+          // Mark idle and hand back the phrase. We deliberately do NOT call
+          // _stt.stop() here — doing so mid-callback can wedge the recognizer
+          // so later sessions won't start. The engine ends on its own (pauseFor
+          // / the 'done' status), and the UI already clears on this result.
+          _sttListening = false;
           onSttResult?.call(result.recognizedWords);
         } else {
           onSttPartialResult?.call(result.recognizedWords);
         }
       },
-      listenFor: const Duration(seconds: 30),
-      pauseFor: const Duration(seconds: 4),
+      listenFor: const Duration(seconds: 12),
+      pauseFor: const Duration(seconds: 3),
       localeId: 'en_US',
-      cancelOnError: true,
+      // Short-phrase mode: better for one-word answers like "four" / "seven".
+      // (In speech_to_text 7.x this parameter is deprecated in favour of
+      // SpeechListenOptions but still works; remove if your version rejects it.)
+      listenMode: stt.ListenMode.confirmation,
+      // Don't tear the recognizer down on a no-match error — that can stop
+      // later sessions from starting. Our onError handler resets the UI.
+      cancelOnError: false,
       partialResults: true,
     );
   }

@@ -6,6 +6,8 @@ import '../services/feedback_service.dart';
 import 'preference_screen.dart';
 import 'saved_screen.dart';
 import 'profile_screen.dart';
+import 'arrival_predictor_screen.dart';
+import 'currency_converter_screen.dart';
 
 class ExploreHomeScreen extends StatefulWidget {
   const ExploreHomeScreen({super.key});
@@ -378,6 +380,24 @@ class _ExploreTab extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              child: _CrowdForecastBanner()
+                  .animate(delay: const Duration(milliseconds: 250))
+                  .fade(duration: const Duration(milliseconds: 500))
+                  .slideY(begin: 0.15),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+              child: _CurrencyConverterBanner()
+                  .animate(delay: const Duration(milliseconds: 300))
+                  .fade(duration: const Duration(milliseconds: 500))
+                  .slideY(begin: 0.15),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.only(top: 24),
               child: SizedBox(
                 height: 340,
@@ -524,6 +544,152 @@ class _ExploreTab extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Crowd Forecast Banner ────────────────────────────────────────────────────
+/// Entry point into the on-device tourist-arrival predictor. Tapping it opens
+/// [ArrivalPredictorScreen], where the user picks a district + month and the
+/// trained demand model estimates how busy it will be.
+class _CrowdForecastBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ArrivalPredictorScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [AppTheme.deepJungle, AppTheme.cardMid],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.saffron.withOpacity(0.35)),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.saffron.withOpacity(0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.saffron.withOpacity(0.18),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.insights_rounded,
+                  color: AppTheme.saffron, size: 26),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tourist Crowd Forecast',
+                    style: GoogleFonts.cormorantGaramond(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.coconutCream,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'See how busy a district will be, month by month',
+                    style: GoogleFonts.nunito(
+                      fontSize: 12.5,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded,
+                color: AppTheme.saffron, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Currency Converter Banner ────────────────────────────────────────────────
+/// Entry point into the live LKR currency converter ([CurrencyConverterScreen]).
+class _CurrencyConverterBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CurrencyConverterScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [AppTheme.cinnamon, AppTheme.cardMid],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.saffron.withOpacity(0.35)),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.saffron.withOpacity(0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.saffron.withOpacity(0.18),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.currency_exchange_rounded,
+                  color: AppTheme.saffron, size: 26),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Currency Converter',
+                    style: GoogleFonts.cormorantGaramond(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.coconutCream,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Live rates for the Sri Lankan Rupee & more',
+                    style: GoogleFonts.nunito(
+                      fontSize: 12.5,
+                      color: AppTheme.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded,
+                color: AppTheme.saffron, size: 16),
+          ],
+        ),
       ),
     );
   }
