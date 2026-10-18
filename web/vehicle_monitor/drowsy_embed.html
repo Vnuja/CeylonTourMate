@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Alertness | CeylonTourMate</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <!-- TensorFlow.js for Drowsiness Detection -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <!-- MediaPipe Face Mesh for precise landmarks (EAR) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+    
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --bg-color: #0F1A12;
+            --bg-surface: #1A2E1E;
+            --bg-elevated: #243328;
+            --primary: #E8A020;
+            --secondary: #1B5E3B;
+            --cinnamon: #B5651D;
+            --success: #4CAF50;
+            --warning: #E8A020;
+            --error: #E57373;
+            --text-main: #F5F0E8;
+            --text-dim: #B8C4BB;
+            --text-muted: #7E9084;
+            --border-color: rgba(232, 160, 32, 0.28);
+            --border-subtle: #2D4A32;
+            --glass-bg: #1A2E1E;
+            --glass-border: rgba(232, 160, 32, 0.28);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: transparent !important;
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            width: 100%;
+        }
+
+        #embed-root {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            background: transparent;
+        }
+
+        .drowsy-section {
+            margin-top: 0 !important;
+            padding: 0 !important;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.2px;
+        }
+
+        .drowsy-card {
+            background: var(--bg-surface) !important;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drowsy-camera-area {
+            position: relative;
+            width: 100%;
+            height: 230px;
+            background: #0F1A12;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .drowsy-camera-area video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .drowsy-camera-area canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+            z-index: 2;
+        }
+
+        .drowsy-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 1;
+            background: #0F1A12;
+        }
+
+        .drowsy-placeholder .placeholder-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--bg-elevated);
+            border: 1px solid rgba(126, 144, 132, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drowsy-placeholder .placeholder-icon .material-symbols-rounded {
+            font-size: 32px;
+            color: var(--text-muted);
+        }
+
+        .drowsy-placeholder p {
+            font-size: 14px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* Controls Panel */
+        .drowsy-controls {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .drowsy-status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drowsy-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drowsy-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .drowsy-status-dot.active {
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .drowsy-status-dot.warning {
+            background: var(--error);
+            box-shadow: 0 0 12px rgba(229, 115, 115, 0.7);
+        }
+
+        .drowsy-status-dot.loading,
+        .drowsy-status-dot.starting {
+            background: var(--primary);
+            box-shadow: 0 0 8px rgba(232, 160, 32, 0.6);
+        }
+
+        .drowsy-status-dot.ready {
+            background: var(--primary);
+        }
+
+        .drowsy-status-dot.error {
+            background: var(--error);
+        }
+
+        .drowsy-status-dot.inactive {
+            background: var(--text-muted);
+        }
+
+        .drowsy-status-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Start/Stop Button */
+        .drowsy-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: #0F1A12;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(232, 160, 32, 0.25);
+        }
+
+        .drowsy-toggle-btn .material-symbols-rounded {
+            font-size: 18px;
+            color: #0F1A12;
+        }
+
+        .drowsy-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(232, 160, 32, 0.35);
+        }
+
+        .drowsy-toggle-btn.active {
+            background: #E57373 !important;
+            color: #0F1A12 !important;
+            box-shadow: 0 4px 12px rgba(229, 115, 115, 0.3);
+        }
+
+        .drowsy-toggle-btn.active .material-symbols-rounded {
+            color: #0F1A12 !important;
+        }
+
+        /* Confidence Bar */
+        .drowsy-confidence {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .drowsy-confidence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drowsy-confidence-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .drowsy-confidence-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .drowsy-confidence-track {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-elevated);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .drowsy-confidence-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            background: var(--success);
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        /* Info Chips */
+        .drowsy-info {
+            display: flex;
+            gap: 8px;
+        }
+
+        .drowsy-info-chip {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+        }
+
+        .drowsy-info-chip .material-symbols-rounded {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .drowsy-info-chip .chip-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .drowsy-info-chip .chip-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .drowsy-info-chip .chip-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Shield Badge */
+        .drowsy-shield {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .drowsy-shield.safe {
+            background: rgba(27, 94, 59, 0.3);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            color: #81C784;
+        }
+
+        .drowsy-shield.danger {
+            background: rgba(229, 115, 115, 0.2);
+            border: 1px solid rgba(229, 115, 115, 0.5);
+            color: #E57373;
+        }
+
+        .drowsy-shield .material-symbols-rounded {
+            font-size: 14px;
+        }
+
+        /* Flash effects */
+        .drowsy-card.alert-flash {
+            border-color: #E57373 !important;
+            box-shadow: 0 0 30px rgba(229, 115, 115, 0.4), 0 8px 32px rgba(0, 0, 0, 0.45);
+            animation: alertPulse 0.6s ease-in-out 3;
+        }
+
+        .drowsy-card.critical-flash {
+            border-color: #E57373 !important;
+            box-shadow: 0 0 50px rgba(229, 115, 115, 0.7), 0 8px 32px rgba(0, 0, 0, 0.45);
+            animation: criticalPulse 0.4s ease-in-out infinite;
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(229, 115, 115, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(229, 115, 115, 0.6); }
+        }
+
+        @keyframes criticalPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(229, 115, 115, 0.3);
+                background: var(--bg-surface);
+            }
+            50% { 
+                box-shadow: 0 0 60px rgba(229, 115, 115, 0.8);
+                background: rgba(229, 115, 115, 0.15);
+            }
+        }
+
+        /* Notifications / Snackbars */
+        .notification-container {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 90%;
+            max-width: 440px;
+            pointer-events: none;
+        }
+
+        .snackbar {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: #1A2E1E;
+            color: #F5F0E8;
+            border: 1px solid rgba(232, 160, 32, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .snackbar.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .snackbar.error {
+            border-color: #E57373;
+            background: rgba(45, 18, 18, 0.95);
+        }
+
+        .snackbar.warning {
+            border-color: #E8A020;
+            background: rgba(45, 34, 18, 0.95);
+        }
+
+        .snackbar.info, .snackbar.success {
+            border-color: #4CAF50;
+            background: rgba(18, 42, 24, 0.95);
+        }
+
+        .snackbar .material-symbols-rounded {
+            font-size: 18px;
+        }
+        .snackbar.error .material-symbols-rounded { color: #E57373; }
+        .snackbar.warning .material-symbols-rounded { color: #E8A020; }
+        .snackbar.info .material-symbols-rounded, .snackbar.success .material-symbols-rounded { color: #81C784; }
+
+        .snackbar-content {
+            flex: 1;
+            font-size: 12.5px;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+
+        .snackbar-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="embed-root">
+        <!-- Drowsiness Detection Section -->
+        <section class="drowsy-section">
+            <div class="section-header">
+                <h3>Driver Alertness</h3>
+                <div class="drowsy-shield safe" id="drowsy-shield">
+                    <span class="material-symbols-rounded">verified_user</span>
+                    Safe
+                </div>
+            </div>
+            <div class="glass-card drowsy-card" id="drowsy-card">
+                <!-- Camera Feed -->
+                <div class="drowsy-camera-area">
+                    <video id="drowsy-video" playsinline muted autoplay></video>
+                    <canvas id="drowsy-canvas"></canvas>
+                    <div class="drowsy-placeholder" id="drowsy-placeholder">
+                        <div class="placeholder-icon">
+                            <span class="material-symbols-rounded">visibility</span>
+                        </div>
+                        <p>Tap Start to begin monitoring</p>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="drowsy-controls">
+                    <!-- Status & Toggle -->
+                    <div class="drowsy-status-row">
+                        <div class="drowsy-status">
+                            <div class="drowsy-status-dot inactive" id="drowsy-status-indicator"></div>
+                            <span class="drowsy-status-label" id="drowsy-status-text">Ready to start</span>
+                        </div>
+                        <button class="drowsy-toggle-btn" id="drowsy-toggle-btn">
+                            <span class="material-symbols-rounded">play_circle</span>
+                            <span class="toggle-label">Start</span>
+                        </button>
+                    </div>
+
+                    <!-- Confidence Bar -->
+                    <div class="drowsy-confidence">
+                        <div class="drowsy-confidence-header">
+                            <span class="drowsy-confidence-label">Drowsiness Level</span>
+                            <span class="drowsy-confidence-value" id="drowsy-confidence-value">0%</span>
+                        </div>
+                        <div class="drowsy-confidence-track">
+                            <div class="drowsy-confidence-bar" id="drowsy-confidence-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Info Chips -->
+                    <div class="drowsy-info">
+                        <div class="drowsy-info-chip">
+                            <span class="material-symbols-rounded">visibility</span>
+                            <div class="chip-text">
+                                <span class="chip-label">Eye State</span>
+                                <span class="chip-value" id="drowsy-eye-state" style="color: #3FB950; font-weight: 700;">Open</span>
+                            </div>
+                        </div>
+                        <div class="drowsy-info-chip">
+                            <span class="material-symbols-rounded">model_training</span>
+                            <div class="chip-text">
+                                <span class="chip-label">Engine</span>
+                                <span class="chip-value" id="drowsy-engine">Hybrid AI</span>
+                            </div>
+                        </div>
+                        <div class="drowsy-info-chip">
+                            <span class="material-symbols-rounded">camera_front</span>
+                            <div class="chip-text">
+                                <span class="chip-label">Camera</span>
+                                <span class="chip-value" id="drowsy-camera-status">Front</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div id="notification-container" class="notification-container"></div>
+    </div>
+
+    <!-- Initialize Detection -->
+    <script type="module">
+        import { initDrowsinessDetection, startDetection, stopDetection } from './js/drowsiness.js';
+
+        // Auto initialize on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                initDrowsinessDetection();
+            });
+        } else {
+            initDrowsinessDetection();
+        }
+
+        // Parent window message listener
+        window.addEventListener('message', (e) => {
+            if (!e.data) return;
+            if (e.data.type === 'STOP_DETECTION') {
+                stopDetection();
+            } else if (e.data.type === 'START_DETECTION') {
+                startDetection();
+            }
+        });
+    </script>
+</body>
+</html>
