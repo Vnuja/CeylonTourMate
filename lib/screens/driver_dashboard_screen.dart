@@ -1,2 +1,5 @@
-export 'driver_dashboard_screen_stub.dart'
-    if (dart.library.html) 'driver_dashboard_screen_web.dart';
+export 'vehicle_monitor_login_screen.dart';
+
+import 'vehicle_monitor_login_screen.dart';
+
+typedef DriverDashboardScreen = VehicleMonitorLoginScreen;

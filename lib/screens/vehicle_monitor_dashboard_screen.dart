@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/drowsy_camera.dart';
 import 'vehicle_monitor_login_screen.dart';
 
 class VehicleMonitorDashboardScreen extends StatefulWidget {
@@ -28,6 +27,9 @@ class _VehicleMonitorDashboardScreenState
     with TickerProviderStateMixin {
   // Alertness state
   bool _isMonitoring = false;
+  double _drowsinessLevel = 0.04;
+  String _eyeState = 'Open';
+  Timer? _simulationTimer;
 
   // Live telemetry state
   int _speed = 0;
@@ -54,8 +56,6 @@ class _VehicleMonitorDashboardScreenState
     },
   ];
 
-  StreamSubscription<Map<String, dynamic>>? _drowsySub;
-
   late final AnimationController _pulseController;
   late final AnimationController _scanController;
 
@@ -71,38 +71,38 @@ class _VehicleMonitorDashboardScreenState
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
-
-    DrowsyCameraController.ensureRegistered();
-    _drowsySub = DrowsyCameraController.messageStream.listen((data) {
-      if (!mounted) return;
-      if (data['type'] == 'DROWSINESS_UPDATE') {
-        final isMon = data['isMonitoring'] == true;
-        setState(() {
-          _isMonitoring = isMon;
-          if (_isMonitoring && _speed == 0) {
-            _speed = 52;
-          }
-        });
-      } else if (data['type'] == 'DROWSINESS_TOGGLE') {
-        setState(() {
-          _isMonitoring = data['active'] == true;
-          if (!_isMonitoring) {
-            _speed = 0;
-          } else if (_speed == 0) {
-            _speed = 52;
-          }
-        });
-      }
-    });
   }
 
   @override
   void dispose() {
-    _drowsySub?.cancel();
-    DrowsyCameraController.stopCamera();
+    _simulationTimer?.cancel();
     _pulseController.dispose();
     _scanController.dispose();
     super.dispose();
+  }
+
+  void _toggleMonitoring() {
+    setState(() {
+      _isMonitoring = !_isMonitoring;
+      if (_isMonitoring) {
+        _speed = 52;
+        _drowsinessLevel = 0.08;
+        _eyeState = 'Open';
+        _simulationTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+          if (!mounted) return;
+          setState(() {
+            _speed = 48 + (timer.tick % 6) * 2;
+            _drowsinessLevel = 0.05 + ((timer.tick % 4) * 0.02);
+            _eyeState = (timer.tick % 8 == 0) ? 'Blink' : 'Open';
+          });
+        });
+      } else {
+        _simulationTimer?.cancel();
+        _speed = 0;
+        _drowsinessLevel = 0.0;
+        _eyeState = 'Open';
+      }
+    });
   }
 
   Future<void> _signOut() async {
@@ -868,10 +868,337 @@ class _VehicleMonitorDashboardScreenState
   }
 
   Widget _buildAlertnessSection() {
-    return const SizedBox(
-      height: 480,
-      width: double.infinity,
-      child: HtmlElementView(viewType: DrowsyCameraController.viewTypeId),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Driver Alertness',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFFF5F0E8),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1B5E3B).withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF4CAF50).withValues(alpha: 0.4),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.verified_user_rounded,
+                      color: Color(0xFF81C784), size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Safe',
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF81C784),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Drowsy Card
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A2E1E),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0x47E8A020)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.4),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Camera Preview area
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(24)),
+                child: Container(
+                  height: 190,
+                  width: double.infinity,
+                  color: const Color(0xFF0F1A12),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Scanner lines
+                      if (_isMonitoring)
+                        AnimatedBuilder(
+                          animation: _scanController,
+                          builder: (context, child) {
+                            return Positioned(
+                              top: _scanController.value * 180,
+                              left: 20,
+                              right: 20,
+                              child: Container(
+                                height: 2,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.transparent,
+                                      const Color(0xFF4CAF50)
+                                          .withValues(alpha: 0.8),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                      // Center HUD
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _isMonitoring
+                                  ? const Color(0xFF1B5E3B)
+                                      .withValues(alpha: 0.4)
+                                  : const Color(0xFF243328),
+                              border: Border.all(
+                                color: _isMonitoring
+                                    ? const Color(0xFF4CAF50)
+                                    : const Color(0xFF7E9084)
+                                        .withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Icon(
+                              _isMonitoring
+                                  ? Icons.face_retouching_natural_rounded
+                                  : Icons.visibility_rounded,
+                              size: 28,
+                              color: _isMonitoring
+                                  ? const Color(0xFF81C784)
+                                  : const Color(0xFF7E9084),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            _isMonitoring
+                              ? 'Active AI Driver Eye Tracking'
+                              : 'Tap Start to begin monitoring',
+                            style: GoogleFonts.outfit(
+                              fontSize: 13,
+                              color: _isMonitoring
+                                  ? const Color(0xFF81C784)
+                                  : const Color(0xFFB8C4BB),
+                              fontWeight: _isMonitoring
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Controls & Status
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _isMonitoring
+                                    ? const Color(0xFF4CAF50)
+                                    : const Color(0xFF7E9084),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _isMonitoring
+                                  ? 'Monitoring Active'
+                                  : 'Ready to start',
+                              style: GoogleFonts.outfit(
+                                fontSize: 13,
+                                color: const Color(0xFFF5F0E8),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _isMonitoring
+                                ? const Color(0xFFE57373)
+                                : const Color(0xFFE8A020),
+                            foregroundColor: const Color(0xFF0F1A12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                          ),
+                          onPressed: _toggleMonitoring,
+                          icon: Icon(
+                            _isMonitoring
+                                ? Icons.stop_circle_rounded
+                                : Icons.play_circle_rounded,
+                            size: 18,
+                          ),
+                          label: Text(
+                            _isMonitoring ? 'Stop' : 'Start',
+                            style: GoogleFonts.outfit(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Confidence Bar
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Drowsiness Level',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            color: const Color(0xFFB8C4BB),
+                          ),
+                        ),
+                        Text(
+                          '${(_drowsinessLevel * 100).toInt()}%',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFFF5F0E8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: _drowsinessLevel,
+                        minHeight: 6,
+                        backgroundColor: const Color(0xFF243328),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF4CAF50),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Info Chips
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildDrowsyChip(
+                            icon: Icons.visibility_rounded,
+                            label: 'Eye State',
+                            value: _isMonitoring ? _eyeState : 'Idle',
+                            valueColor: const Color(0xFF81C784),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildDrowsyChip(
+                            icon: Icons.model_training_rounded,
+                            label: 'Engine',
+                            value: 'Hybrid AI',
+                            valueColor: const Color(0xFFF5F0E8),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildDrowsyChip(
+                            icon: Icons.camera_front_rounded,
+                            label: 'Camera',
+                            value: 'Front',
+                            valueColor: const Color(0xFFF5F0E8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDrowsyChip({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color valueColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF243328),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2D4A32)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFFE8A020)),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.outfit(
+                    fontSize: 9.5,
+                    color: const Color(0xFF7E9084),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: valueColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

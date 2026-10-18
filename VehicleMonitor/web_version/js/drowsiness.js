@@ -464,22 +464,6 @@ async function runDetection() {
       result?.ear || 0.3,
     );
 
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(
-          {
-            type: "DROWSINESS_UPDATE",
-            isMonitoring: true,
-            confidence: smoothedConfidence,
-            eyeState: eyeStateStr,
-            status: currentStatus,
-            ear: result?.ear || 0.3,
-          },
-          "*",
-        );
-      }
-    } catch (_) {}
-
     // --- IMPROVEMENT: GPU Memory Cleanup (especially for iPhone) ---
     if (typeof tf !== "undefined") {
       await tf.nextFrame();
@@ -987,10 +971,6 @@ function updateToggleBtn(active) {
   if (!toggleBtn) return;
   const icon = toggleBtn.querySelector(".material-symbols-rounded");
   const label = toggleBtn.querySelector(".toggle-label");
-  const placeholder = document.getElementById("drowsy-placeholder");
-  if (placeholder) {
-    placeholder.style.display = active ? "none" : "flex";
-  }
 
   if (active) {
     toggleBtn.classList.add("active");
@@ -1001,18 +981,6 @@ function updateToggleBtn(active) {
     if (icon) icon.textContent = "play_circle";
     if (label) label.textContent = "Start";
   }
-
-  try {
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage(
-        {
-          type: "DROWSINESS_TOGGLE",
-          active: active,
-        },
-        "*",
-      );
-    }
-  } catch (_) {}
 }
 
 function drawDetectionOverlay(isDrowsy, confidence, isNoFace) {
