@@ -91,6 +91,17 @@ async function syncTelemetryToFirebase(
   eyeState = "OPEN",
   ear = 0.3,
 ) {
+  // Post telemetry to parent container (e.g. Flutter app via HtmlElementView)
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({
+      type: "DROWSY_TELEMETRY",
+      status: status,
+      confidence: confidence,
+      eyeState: eyeState,
+      ear: ear,
+    }, "*");
+  }
+
   if (!db || !auth.currentUser) return;
 
   const now = Date.now();
@@ -405,15 +416,15 @@ async function runDetection() {
     }
 
     // --- IMPROVEMENT: Microsleep Detection (Critical Alert for 1.5s+ closure) ---
-    if (
-      isDrowsy &&
-      result &&
-      (result.isDrowsy || result.ear < CONFIG.EAR_THRESHOLD)
-    ) {
+    const isEyesClosed =
+      result?.eyeState === "CLOSED" ||
+      (result?.ear && result.ear < CONFIG.EAR_THRESHOLD);
+
+    if (isEyesClosed || isDrowsy) {
       if (!eyesClosedStartTime) eyesClosedStartTime = Date.now();
       const closedDuration = Date.now() - eyesClosedStartTime;
 
-      if (closedDuration > CONFIG.MICROSLEEP_DURATION_MS) {
+      if (closedDuration >= CONFIG.MICROSLEEP_DURATION_MS) {
         triggerCriticalAlert("MICROSLEEP DETECTED!");
         eyesClosedStartTime = null; // Reset after critical alert
       }
@@ -422,9 +433,6 @@ async function runDetection() {
     }
 
     let currentStatus = "Active";
-    const isEyesClosed =
-      result?.eyeState === "CLOSED" ||
-      (result?.ear && result.ear < CONFIG.EAR_THRESHOLD);
     const eyeStateStr = isEyesClosed ? "CLOSED" : "OPEN";
 
     // Update driver UI eye state chip if present
@@ -747,6 +755,21 @@ function estimateHeadPose(landmarks) {
 }
 
 /**
+ * Draw un-mirrored text on canvas (counters CSS scaleX(-1))
+ */
+function drawCanvasText(text, x, y, font, color, align = "center") {
+  canvasCtx.save();
+  canvasCtx.translate(x, y);
+  canvasCtx.scale(-1, 1);
+  canvasCtx.font = font;
+  canvasCtx.fillStyle = color;
+  canvasCtx.textAlign = align;
+  canvasCtx.textBaseline = "alphabetic";
+  canvasCtx.fillText(text, 0, 0);
+  canvasCtx.restore();
+}
+
+/**
  * Draw face detection landmarks on the canvas overlay
  */
 function drawFaceLandmarks(face, eyeRegions, ear, pose) {
@@ -765,18 +788,26 @@ function drawFaceLandmarks(face, eyeRegions, ear, pose) {
   canvasCtx.strokeRect(bx, by, bw, bh);
   canvasCtx.setLineDash([]);
 
-  // EAR display
-  canvasCtx.fillStyle = ear < CONFIG.EAR_THRESHOLD ? "#F85149" : "#3FB950";
-  canvasCtx.font = "bold 12px Outfit, sans-serif";
-  canvasCtx.fillText(`EAR: ${ear.toFixed(3)}`, bx, by - 10);
-
-  // Pose display (Pitch/Yaw)
-  canvasCtx.fillStyle = isDistracted ? "#F85149" : "rgba(255, 255, 255, 0.7)";
-  canvasCtx.font = "10px Outfit, sans-serif";
-  canvasCtx.fillText(
-    `P: ${pose.pitch.toFixed(2)} Y: ${pose.yaw.toFixed(2)}`,
-    bx + bw - 70,
+  // EAR display (positioned above screen-left corner of box)
+  const earColor = ear < CONFIG.EAR_THRESHOLD ? "#F85149" : "#3FB950";
+  drawCanvasText(
+    `EAR: ${ear.toFixed(3)}`,
+    bx + bw,
     by - 10,
+    "bold 12px Outfit, sans-serif",
+    earColor,
+    "left"
+  );
+
+  // Pose display (Pitch/Yaw) (positioned above screen-right corner of box)
+  const poseColor = isDistracted ? "#F85149" : "rgba(255, 255, 255, 0.7)";
+  drawCanvasText(
+    `P: ${pose.pitch.toFixed(2)} Y: ${pose.yaw.toFixed(2)}`,
+    bx + 70,
+    by - 10,
+    "10px Outfit, sans-serif",
+    poseColor,
+    "left"
   );
 
   // Eye crop regions
@@ -786,9 +817,14 @@ function drawFaceLandmarks(face, eyeRegions, ear, pose) {
     canvasCtx.strokeRect(eye.x, eye.y, eye.size, eye.size);
 
     // Label
-    canvasCtx.fillStyle = "rgba(63, 185, 80, 0.9)";
-    canvasCtx.font = "bold 10px Outfit, sans-serif";
-    canvasCtx.fillText(eye.label, eye.x + 3, eye.y + 12);
+    drawCanvasText(
+      eye.label,
+      eye.x + eye.size / 2,
+      eye.y + 13,
+      "bold 11px Outfit, sans-serif",
+      "rgba(63, 185, 80, 0.95)",
+      "center"
+    );
   }
 
   canvasCtx.restore();
@@ -1006,10 +1042,7 @@ function drawDetectionOverlay(isDrowsy, confidence, isNoFace) {
     canvasCtx.fillRect(0, 0, w, h);
 
     // Status text
-    canvasCtx.fillStyle = "#F85149";
-    canvasCtx.font = "bold 14px Outfit, sans-serif";
-    canvasCtx.textAlign = "center";
-    canvasCtx.fillText(`⚠ DROWSY (${pct}%)`, w / 2, h - 12);
+    drawCanvasText(`⚠ DROWSY (${pct}%)`, w / 2, h - 12, "bold 14px Outfit, sans-serif", "#F85149", "center");
     canvasCtx.restore();
   } else if (isNoFace && noFaceCount >= NO_FACE_FRAMES_THRESHOLD) {
     canvasCtx.save();
@@ -1028,10 +1061,7 @@ function drawDetectionOverlay(isDrowsy, confidence, isNoFace) {
     canvasCtx.fillRect(0, 0, w, h);
 
     // Warning text
-    canvasCtx.fillStyle = "#FFA500";
-    canvasCtx.font = "bold 14px Outfit, sans-serif";
-    canvasCtx.textAlign = "center";
-    canvasCtx.fillText(`⚠ FACE NOT DETECTED`, w / 2, h - 12);
+    drawCanvasText(`⚠ FACE NOT DETECTED`, w / 2, h - 12, "bold 14px Outfit, sans-serif", "#FFA500", "center");
     canvasCtx.restore();
   } else {
     // Subtle green border
@@ -1040,10 +1070,7 @@ function drawDetectionOverlay(isDrowsy, confidence, isNoFace) {
     canvasCtx.lineWidth = 2;
     canvasCtx.strokeRect(2, 2, w - 4, h - 4);
 
-    canvasCtx.fillStyle = "#3FB950";
-    canvasCtx.font = "12px Outfit, sans-serif";
-    canvasCtx.textAlign = "center";
-    canvasCtx.fillText(`Alert (${pct}%)`, w / 2, h - 10);
+    drawCanvasText(`Alert (${pct}%)`, w / 2, h - 10, "12px Outfit, sans-serif", "#3FB950", "center");
     canvasCtx.restore();
   }
 }

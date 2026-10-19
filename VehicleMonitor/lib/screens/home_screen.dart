@@ -107,7 +107,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
         } else {
           // Normal fluctuation
-          _drowsinessLevel = (0.05 + (DateTime.now().second % 10) * 0.015).clamp(0.0, 0.25);
+          _drowsinessLevel =
+              (0.05 + (DateTime.now().second % 10) * 0.015).clamp(0.0, 0.25);
           _eyeState = 'Open';
           _perclos = 5.2 + (DateTime.now().second % 4) * 0.4;
           _blinkRate = 16 + (DateTime.now().second % 5);
@@ -125,7 +126,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         AlertItem(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           title: 'CRITICAL: Driver Drowsiness Detected!',
-          message: 'Prolonged eye closure (PERCLOS > 50%). Audible alarm triggered.',
+          message:
+              'Prolonged eye closure (PERCLOS > 50%). Audible alarm triggered.',
           timestamp: DateTime.now(),
           severity: AlertSeverity.critical,
           icon: Icons.warning_amber_rounded,
@@ -161,14 +163,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFEF4444),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
             child: const Text('Sign Out'),
           ),
@@ -212,7 +216,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     color: const Color(0xFFEF4444).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.emergency_rounded, color: Color(0xFFEF4444)),
+                  child: const Icon(Icons.emergency_rounded,
+                      color: Color(0xFFEF4444)),
                 ),
                 const SizedBox(width: 12),
                 const Column(
@@ -235,10 +240,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ],
             ),
             const SizedBox(height: 20),
-            _sosTile('1912', 'Sri Lanka Tourist Police Hotline', Icons.local_police_rounded),
+            _sosTile('1912', 'Sri Lanka Tourist Police Hotline',
+                Icons.local_police_rounded),
             _sosTile('119', 'Police Emergency Dispatch', Icons.shield_rounded),
-            _sosTile('1990', 'Suwa Seriya Free Emergency Ambulance', Icons.medical_services_rounded),
-            _sosTile('+94 11 242 1052', 'CeylonTourMate Fleet Assistance', Icons.support_agent_rounded),
+            _sosTile('1990', 'Suwa Seriya Free Emergency Ambulance',
+                Icons.medical_services_rounded),
+            _sosTile('+94 11 214 2355', 'CeylonTourMate Fleet Assistance',
+                Icons.support_agent_rounded),
             const SizedBox(height: 12),
           ],
         ),
@@ -266,7 +274,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         subtitle: Text(
           label,
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
+          style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -440,7 +449,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 1.5),
                       decoration: BoxDecoration(
                         color: const Color(0xFF10B981).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
@@ -609,11 +619,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       height: 12,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                        color: isDrowsy
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFF10B981),
                         boxShadow: [
                           BoxShadow(
-                            color: (isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF10B981))
-                                .withValues(alpha: _pulseController.value * 0.8),
+                            color: (isDrowsy
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981))
+                                .withValues(
+                                    alpha: _pulseController.value * 0.8),
                             blurRadius: 8,
                             spreadRadius: 2,
                           ),
@@ -628,9 +643,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isDrowsy ? 'DROWSINESS WARNING' : 'DRIVER ALERT & VIGILANT',
+                        isDrowsy
+                            ? 'DROWSINESS WARNING'
+                            : 'DRIVER ALERT & VIGILANT',
                         style: TextStyle(
-                          color: isDrowsy ? const Color(0xFFFCA5A5) : const Color(0xFF6EE7B7),
+                          color: isDrowsy
+                              ? const Color(0xFFFCA5A5)
+                              : const Color(0xFF6EE7B7),
                           fontWeight: FontWeight.w800,
                           fontSize: 13,
                           letterSpacing: 0.5,
@@ -654,11 +673,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFEF4444),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       visualDensity: VisualDensity.compact,
                     ),
-                    child: const Text('ALARM', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    child: const Text('ALARM',
+                        style: TextStyle(
+                            fontSize: 11, fontWeight: FontWeight.bold)),
                   ),
               ],
             ),
@@ -713,7 +736,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 gradient: LinearGradient(
                                   colors: [
                                     Colors.transparent,
-                                    (isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF38BDF8))
+                                    (isDrowsy
+                                            ? const Color(0xFFEF4444)
+                                            : const Color(0xFF38BDF8))
                                         .withValues(alpha: 0.9),
                                     Colors.transparent,
                                   ],
@@ -731,7 +756,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF38BDF8),
+                            color: isDrowsy
+                                ? const Color(0xFFEF4444)
+                                : const Color(0xFF38BDF8),
                             width: 2,
                           ),
                         ),
@@ -754,7 +781,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               child: Icon(
                                 Icons.face_rounded,
                                 size: 70,
-                                color: (isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF38BDF8))
+                                color: (isDrowsy
+                                        ? const Color(0xFFEF4444)
+                                        : const Color(0xFF38BDF8))
                                     .withValues(alpha: 0.45),
                               ),
                             ),
@@ -767,7 +796,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         top: 12,
                         left: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.black.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(10),
@@ -776,7 +806,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.camera_front_rounded, size: 13, color: Colors.white70),
+                              Icon(Icons.camera_front_rounded,
+                                  size: 13, color: Colors.white70),
                               SizedBox(width: 5),
                               Text(
                                 'FRONT CABIN CAM',
@@ -795,9 +826,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         top: 12,
                         right: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: (isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF10B981))
+                            color: (isDrowsy
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF10B981))
                                 .withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -835,7 +869,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w800,
-                                color: isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF34D399),
+                                color: isDrowsy
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF34D399),
                               ),
                             ),
                           ],
@@ -846,9 +882,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: LinearProgressIndicator(
                             value: _drowsinessLevel,
                             minHeight: 10,
-                            backgroundColor: Colors.white.withValues(alpha: 0.08),
+                            backgroundColor:
+                                Colors.white.withValues(alpha: 0.08),
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                              isDrowsy
+                                  ? const Color(0xFFEF4444)
+                                  : const Color(0xFF10B981),
                             ),
                           ),
                         ),
@@ -857,11 +896,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         // Metric Chips
                         Row(
                           children: [
-                            _miniMetric('PERCLOS', '$_perclos%', Icons.visibility_rounded),
+                            _miniMetric('PERCLOS', '$_perclos%',
+                                Icons.visibility_rounded),
                             const SizedBox(width: 8),
-                            _miniMetric('Blink Rate', '$_blinkRate/m', Icons.remove_red_eye_rounded),
+                            _miniMetric('Blink Rate', '$_blinkRate/m',
+                                Icons.remove_red_eye_rounded),
                             const SizedBox(width: 8),
-                            _miniMetric('EAR Ratio', isDrowsy ? '0.14' : '0.32', Icons.show_chart_rounded),
+                            _miniMetric('EAR Ratio', isDrowsy ? '0.14' : '0.32',
+                                Icons.show_chart_rounded),
                           ],
                         ),
                       ],
@@ -891,10 +933,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                            color:
+                                const Color(0xFFF59E0B).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(Icons.science_rounded, size: 20, color: Color(0xFFF59E0B)),
+                          child: const Icon(Icons.science_rounded,
+                              size: 20, color: Color(0xFFF59E0B)),
                         ),
                         const SizedBox(width: 10),
                         const Column(
@@ -910,7 +954,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                             Text(
                               'Test alert trigger & audio-visual response',
-                              style: TextStyle(fontSize: 11, color: Colors.white54),
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.white54),
                             ),
                           ],
                         ),
@@ -919,7 +964,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Switch(
                       value: _isSimulatingDrowsy,
                       activeThumbColor: const Color(0xFFEF4444),
-                      activeTrackColor: const Color(0xFFEF4444).withValues(alpha: 0.35),
+                      activeTrackColor:
+                          const Color(0xFFEF4444).withValues(alpha: 0.35),
                       onChanged: (val) {
                         setState(() {
                           _isSimulatingDrowsy = val;
@@ -943,14 +989,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           setState(() => _isMonitoring = !_isMonitoring);
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: _isMonitoring ? const Color(0xFFF87171) : const Color(0xFF34D399),
+                          foregroundColor: _isMonitoring
+                              ? const Color(0xFFF87171)
+                              : const Color(0xFF34D399),
                           side: BorderSide(
-                            color: _isMonitoring ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                            color: _isMonitoring
+                                ? const Color(0xFFEF4444)
+                                : const Color(0xFF10B981),
                           ),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
-                        icon: Icon(_isMonitoring ? Icons.pause_circle_rounded : Icons.play_circle_rounded, size: 18),
-                        label: Text(_isMonitoring ? 'Pause Camera' : 'Resume Camera'),
+                        icon: Icon(
+                            _isMonitoring
+                                ? Icons.pause_circle_rounded
+                                : Icons.play_circle_rounded,
+                            size: 18),
+                        label: Text(
+                            _isMonitoring ? 'Pause Camera' : 'Resume Camera'),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -960,7 +1016,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFEF4444),
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
                         icon: const Icon(Icons.volume_up_rounded, size: 18),
                         label: const Text('Test Alarm'),
@@ -1071,7 +1128,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _dashboardCard(String title, String main, String sub, IconData icon, Color color) {
+  Widget _dashboardCard(
+      String title, String main, String sub, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1135,7 +1193,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20),
+                        Icon(Icons.check_circle_rounded,
+                            color: Color(0xFF10B981), size: 20),
                         SizedBox(width: 8),
                         Text(
                           'Route Compliant',
@@ -1148,7 +1207,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: const Color(0xFF10B981).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
@@ -1176,7 +1236,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_rounded, size: 14, color: Color(0xFF60A5FA)),
+                    const Icon(Icons.location_on_rounded,
+                        size: 14, color: Color(0xFF60A5FA)),
                     const SizedBox(width: 4),
                     Text(
                       'Destination: Mirissa Bay • ETA: 34 mins',
@@ -1216,7 +1277,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     top: 14,
                     left: 14,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1E293B).withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(12),
@@ -1225,7 +1287,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.gps_fixed_rounded, size: 14, color: Color(0xFF10B981)),
+                          Icon(Icons.gps_fixed_rounded,
+                              size: 14, color: Color(0xFF10B981)),
                           SizedBox(width: 6),
                           Text(
                             'GPS HIGH ACCURACY (±3m)',
@@ -1255,7 +1318,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         );
                       },
                       backgroundColor: const Color(0xFF2563EB),
-                      child: const Icon(Icons.my_location_rounded, color: Colors.white),
+                      child: const Icon(Icons.my_location_rounded,
+                          color: Colors.white),
                     ),
                   ),
                 ],
@@ -1287,7 +1351,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 _parameterRow('Geofence Buffer', _geofenceStatus),
                 _parameterRow('Speed Cap', '70 km/h (Expressway Regulation)'),
                 _parameterRow('Max Idle Duration', '15 minutes allowed'),
-                _parameterRow('Alert Dispatch', 'Active to CeylonTourMate Command'),
+                _parameterRow(
+                    'Alert Dispatch', 'Active to CeylonTourMate Command'),
               ],
             ),
           ),
@@ -1302,7 +1367,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.white54)),
+          Text(label,
+              style: const TextStyle(fontSize: 12, color: Colors.white54)),
           Text(
             value,
             style: const TextStyle(
@@ -1333,7 +1399,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.3)),
+              border: Border.all(
+                  color: const Color(0xFF3B82F6).withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -1347,7 +1414,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         value: 0.94,
                         strokeWidth: 8,
                         backgroundColor: Colors.white.withValues(alpha: 0.1),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF10B981)),
                       ),
                     ),
                     const Column(
@@ -1389,7 +1457,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       SizedBox(height: 4),
                       Text(
                         'Excellent safety profile. Zero drowsiness alerts in past 48 hours.',
-                        style: TextStyle(fontSize: 12, color: Colors.white70, height: 1.4),
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.white70, height: 1.4),
                       ),
                     ],
                   ),
@@ -1417,10 +1486,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisSpacing: 12,
             childAspectRatio: 1.4,
             children: [
-              _diagnosticCard('Fuel Level', '74%', '380 km Range', Icons.local_gas_station_rounded, const Color(0xFF10B981)),
-              _diagnosticCard('Battery', '13.8 V', 'Alternator Charging', Icons.battery_charging_full_rounded, const Color(0xFF38BDF8)),
-              _diagnosticCard('Tire Pressure', '32 PSI', 'Optimal All-Round', Icons.album_rounded, const Color(0xFFF59E0B)),
-              _diagnosticCard('Cloud Sync', 'Connected', 'Ping: 24ms (OK)', Icons.cloud_done_rounded, const Color(0xFF6366F1)),
+              _diagnosticCard('Fuel Level', '74%', '380 km Range',
+                  Icons.local_gas_station_rounded, const Color(0xFF10B981)),
+              _diagnosticCard('Battery', '13.8 V', 'Alternator Charging',
+                  Icons.battery_charging_full_rounded, const Color(0xFF38BDF8)),
+              _diagnosticCard('Tire Pressure', '32 PSI', 'Optimal All-Round',
+                  Icons.album_rounded, const Color(0xFFF59E0B)),
+              _diagnosticCard('Cloud Sync', 'Connected', 'Ping: 24ms (OK)',
+                  Icons.cloud_done_rounded, const Color(0xFF6366F1)),
             ],
           ),
           const SizedBox(height: 18),
@@ -1462,7 +1535,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _diagnosticCard(String title, String val, String subtitle, IconData icon, Color color) {
+  Widget _diagnosticCard(
+      String title, String val, String subtitle, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1491,9 +1565,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white)),
               const SizedBox(height: 2),
-              Text(subtitle, style: const TextStyle(fontSize: 10, color: Colors.white54)),
+              Text(subtitle,
+                  style: const TextStyle(fontSize: 10, color: Colors.white54)),
             ],
           ),
         ],
@@ -1504,9 +1583,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _tripStat(String label, String val) {
     return Column(
       children: [
-        Text(val, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white)),
+        Text(val,
+            style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Colors.white)),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 11, color: Colors.white54)),
+        Text(label,
+            style: const TextStyle(fontSize: 11, color: Colors.white54)),
       ],
     );
   }
@@ -1533,19 +1617,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 onPressed: () {
                   setState(() => _alerts.clear());
                 },
-                child: const Text('Clear All', style: TextStyle(color: Color(0xFF60A5FA), fontSize: 13)),
+                child: const Text('Clear All',
+                    style: TextStyle(color: Color(0xFF60A5FA), fontSize: 13)),
               ),
             ],
           ),
           const SizedBox(height: 10),
-
           Expanded(
             child: _alerts.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.check_circle_outline_rounded, size: 48, color: Colors.white.withValues(alpha: 0.3)),
+                        Icon(Icons.check_circle_outline_rounded,
+                            size: 48,
+                            color: Colors.white.withValues(alpha: 0.3)),
                         const SizedBox(height: 12),
                         const Text(
                           'No active alerts',
@@ -1558,7 +1644,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     itemCount: _alerts.length,
                     itemBuilder: (context, index) {
                       final alert = _alerts[index];
-                      final isCritical = alert.severity == AlertSeverity.critical;
+                      final isCritical =
+                          alert.severity == AlertSeverity.critical;
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -1580,14 +1667,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: (isCritical ? const Color(0xFFEF4444) : const Color(0xFF38BDF8))
+                                color: (isCritical
+                                        ? const Color(0xFFEF4444)
+                                        : const Color(0xFF38BDF8))
                                     .withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
                                 alert.icon,
                                 size: 18,
-                                color: isCritical ? const Color(0xFFEF4444) : const Color(0xFF38BDF8),
+                                color: isCritical
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFF38BDF8),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -1600,7 +1691,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     style: TextStyle(
                                       fontSize: 13.5,
                                       fontWeight: FontWeight.w700,
-                                      color: isCritical ? const Color(0xFFFCA5A5) : Colors.white,
+                                      color: isCritical
+                                          ? const Color(0xFFFCA5A5)
+                                          : Colors.white,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -1608,7 +1701,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     alert.message,
                                     style: TextStyle(
                                       fontSize: 11.5,
-                                      color: Colors.white.withValues(alpha: 0.7),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.7),
                                       height: 1.35,
                                     ),
                                   ),
@@ -1617,7 +1711,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     '${alert.timestamp.hour.toString().padLeft(2, '0')}:${alert.timestamp.minute.toString().padLeft(2, '0')}',
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: Colors.white.withValues(alpha: 0.4),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.4),
                                     ),
                                   ),
                                 ],
@@ -1640,7 +1735,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       animation: _alarmPulseController,
       builder: (context, child) {
         return Container(
-          color: const Color(0xFFEF4444).withValues(alpha: 0.25 + _alarmPulseController.value * 0.35),
+          color: const Color(0xFFEF4444)
+              .withValues(alpha: 0.25 + _alarmPulseController.value * 0.35),
           child: Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 28),
@@ -1687,7 +1783,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const Text(
                     'Prolonged Eye Closure Detected\nPlease keep your eyes on the road or pull over safely.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13, color: Colors.white70, height: 1.4),
+                    style: TextStyle(
+                        fontSize: 13, color: Colors.white70, height: 1.4),
                   ),
                   const SizedBox(height: 26),
                   ElevatedButton(
@@ -1708,7 +1805,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         SizedBox(width: 8),
                         Text(
                           'I AM AWAKE • DISMISS ALARM',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w800),
                         ),
                       ],
                     ),
@@ -1733,7 +1831,8 @@ class _CameraMeshPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = (isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF38BDF8)).withValues(alpha: 0.12)
+      ..color = (isDrowsy ? const Color(0xFFEF4444) : const Color(0xFF38BDF8))
+          .withValues(alpha: 0.12)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -1772,7 +1871,8 @@ class _MapRoutePainter extends CustomPainter {
 
     final path = Path()
       ..moveTo(40, size.height - 30)
-      ..quadraticBezierTo(size.width * 0.4, size.height * 0.7, size.width * 0.5, size.height * 0.45)
+      ..quadraticBezierTo(size.width * 0.4, size.height * 0.7, size.width * 0.5,
+          size.height * 0.45)
       ..lineTo(size.width - 50, 40);
 
     // Draw expressway corridor
@@ -1782,7 +1882,8 @@ class _MapRoutePainter extends CustomPainter {
     // Vehicle Location Marker
     final carPos = Offset(size.width * 0.5, size.height * 0.45);
     final ripplePaint = Paint()
-      ..color = const Color(0xFF10B981).withValues(alpha: (1.0 - pulseVal) * 0.6)
+      ..color =
+          const Color(0xFF10B981).withValues(alpha: (1.0 - pulseVal) * 0.6)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(carPos, 12 + pulseVal * 10, ripplePaint);

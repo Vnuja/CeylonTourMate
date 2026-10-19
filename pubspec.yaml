@@ -46,6 +46,7 @@ dependencies:
   printing: ^5.13.4
 
   cupertino_icons: ^1.0.8
+  cloud_firestore: ^5.6.12
 
 dev_dependencies:
   flutter_test:
