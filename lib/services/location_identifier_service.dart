@@ -64,7 +64,7 @@ class SimilarPlace {
 }
 
 class LocationIdentifierService {
-  // ── Replace with your actual OpenAI API key ──
+  // ── Replace with your actual OpenAI API key --
   static const String _apiKey =
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
 
