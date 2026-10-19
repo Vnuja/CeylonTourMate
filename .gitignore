@@ -46,3 +46,4 @@ app.*.map.json
 lib/config/openrouter_config.dart
 lib/services/location_identifier_service.dart
 lib/services/openrouter_config.dart
+lib/services/ai_recommendation_service.dart
