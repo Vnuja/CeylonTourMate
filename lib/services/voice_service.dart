@@ -185,6 +185,7 @@ class VoiceService {
     _sttListening = false;
   }
 
+//Explain stopping microphone
   Future<void> cancelListening() async {
     await _stt.cancel();
     _sttListening = false;
