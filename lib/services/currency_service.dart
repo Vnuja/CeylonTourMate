@@ -10,7 +10,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-/// A fetched set of USD-based exchange rates with the time they were fetched.
+/// A fetched set of USD-based exchange rates with the time they were fetched....
 class CurrencyRates {
   /// Map of ISO currency code → units per 1 USD (e.g. {'LKR': 330.5}).
   final Map<String, double> perUsd;
