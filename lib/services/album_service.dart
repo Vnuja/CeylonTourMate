@@ -62,7 +62,7 @@ class AlbumService {
   /// into the actual pixel data. Camera/gallery photos often carry an EXIF
   /// "orientation" tag instead of physically rotated pixels; Image.memory
   /// ignores that tag, which is why photos show up sideways/upside-down
-  /// after upload. Baking the orientation in here fixes that permanently.
+  /// after upload. Baking the orientation in here fixes that permanently...
   Future<List<int>> _normalizeOrientation(File imageFile) async {
     final rawBytes = await imageFile.readAsBytes();
     final decoded = img.decodeImage(rawBytes);
