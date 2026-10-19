@@ -42,7 +42,7 @@ class AIRecommendationService {
 
   // ── Caches ─────────────────────────────────────────────────────────────────
   static final Map<String, _CacheEntry<Map<String, Map<String, dynamic>>>>
-  _weatherCache = {};
+      _weatherCache = {};
   static final Map<String, _CacheEntry<String>> _contextCache = {};
   static const Duration _weatherCacheTtl = Duration(hours: 3);
   static const Duration _contextCacheTtl = Duration(minutes: 30);
@@ -106,7 +106,12 @@ class AIRecommendationService {
       'Nuwara Eliya',
       'Arugam Bay',
     ],
-    'culture & cities': ['Colombo', 'Temple of the Tooth Kandy', 'Galle Fort', 'Jaffna'],
+    'culture & cities': [
+      'Colombo',
+      'Temple of the Tooth Kandy',
+      'Galle Fort',
+      'Jaffna'
+    ],
   };
 
   /// Resolves which of the 20 fixed locations are actually worth fetching
@@ -187,53 +192,268 @@ class AIRecommendationService {
   // matching knowledge-base chunks.)
   static const Map<String, Map<String, dynamic>> _destinationCatalog = {
     // West & South coast
-    'Negombo': {'lat': 7.2083, 'lon': 79.8358, 'categories': [_fun], 'keywords': ['negombo']},
-    'Colombo': {'lat': 6.9271, 'lon': 79.8612, 'categories': [_fun, _rel], 'keywords': ['colombo']},
-    'Mount Lavinia': {'lat': 6.8307, 'lon': 79.8628, 'categories': [_fun], 'keywords': ['mount lavinia']},
-    'Kalutara Bodhiya': {'lat': 6.5854, 'lon': 79.9607, 'categories': [_rel], 'keywords': ['kalutara']},
-    'Beruwala': {'lat': 6.4788, 'lon': 79.9828, 'categories': [_fun], 'keywords': ['beruwala']},
-    'Bentota': {'lat': 6.4204, 'lon': 79.9968, 'categories': [_fun, _adv], 'keywords': ['bentota']},
-    'Kosgoda': {'lat': 6.3500, 'lon': 80.0000, 'categories': [_fun], 'keywords': ['kosgoda']},
-    'Hikkaduwa': {'lat': 6.1395, 'lon': 80.1005, 'categories': [_fun, _adv], 'keywords': ['hikkaduwa']},
-    'Galle Fort': {'lat': 6.0535, 'lon': 80.2210, 'categories': [_rel, _fun], 'keywords': ['galle']},
-    'Unawatuna': {'lat': 6.0100, 'lon': 80.2494, 'categories': [_fun], 'keywords': ['unawatuna']},
-    'Weligama': {'lat': 5.9750, 'lon': 80.4297, 'categories': [_fun, _adv], 'keywords': ['weligama']},
-    'Mirissa': {'lat': 5.9483, 'lon': 80.4716, 'categories': [_fun], 'keywords': ['mirissa']},
-    'Dickwella & Hiriketiya': {'lat': 5.9667, 'lon': 80.6833, 'categories': [_fun, _adv], 'keywords': ['dickwella', 'hiriketiya']},
-    'Tangalle': {'lat': 6.0240, 'lon': 80.7970, 'categories': [_fun], 'keywords': ['tangalle']},
+    'Negombo': {
+      'lat': 7.2083,
+      'lon': 79.8358,
+      'categories': [_fun],
+      'keywords': ['negombo']
+    },
+    'Colombo': {
+      'lat': 6.9271,
+      'lon': 79.8612,
+      'categories': [_fun, _rel],
+      'keywords': ['colombo']
+    },
+    'Mount Lavinia': {
+      'lat': 6.8307,
+      'lon': 79.8628,
+      'categories': [_fun],
+      'keywords': ['mount lavinia']
+    },
+    'Kalutara Bodhiya': {
+      'lat': 6.5854,
+      'lon': 79.9607,
+      'categories': [_rel],
+      'keywords': ['kalutara']
+    },
+    'Beruwala': {
+      'lat': 6.4788,
+      'lon': 79.9828,
+      'categories': [_fun],
+      'keywords': ['beruwala']
+    },
+    'Bentota': {
+      'lat': 6.4204,
+      'lon': 79.9968,
+      'categories': [_fun, _adv],
+      'keywords': ['bentota']
+    },
+    'Kosgoda': {
+      'lat': 6.3500,
+      'lon': 80.0000,
+      'categories': [_fun],
+      'keywords': ['kosgoda']
+    },
+    'Hikkaduwa': {
+      'lat': 6.1395,
+      'lon': 80.1005,
+      'categories': [_fun, _adv],
+      'keywords': ['hikkaduwa']
+    },
+    'Galle Fort': {
+      'lat': 6.0535,
+      'lon': 80.2210,
+      'categories': [_rel, _fun],
+      'keywords': ['galle']
+    },
+    'Unawatuna': {
+      'lat': 6.0100,
+      'lon': 80.2494,
+      'categories': [_fun],
+      'keywords': ['unawatuna']
+    },
+    'Weligama': {
+      'lat': 5.9750,
+      'lon': 80.4297,
+      'categories': [_fun, _adv],
+      'keywords': ['weligama']
+    },
+    'Mirissa': {
+      'lat': 5.9483,
+      'lon': 80.4716,
+      'categories': [_fun],
+      'keywords': ['mirissa']
+    },
+    'Dickwella & Hiriketiya': {
+      'lat': 5.9667,
+      'lon': 80.6833,
+      'categories': [_fun, _adv],
+      'keywords': ['dickwella', 'hiriketiya']
+    },
+    'Tangalle': {
+      'lat': 6.0240,
+      'lon': 80.7970,
+      'categories': [_fun],
+      'keywords': ['tangalle']
+    },
     // South-east / East coast
-    'Kataragama': {'lat': 6.4137, 'lon': 81.3350, 'categories': [_rel], 'keywords': ['kataragama']},
-    'Tissamaharama': {'lat': 6.2833, 'lon': 81.2833, 'categories': [_rel, _fun], 'keywords': ['tissamaharama', 'tissa']},
-    'Yala National Park': {'lat': 6.3728, 'lon': 81.5219, 'categories': [_fun, _adv], 'keywords': ['yala']},
-    'Arugam Bay': {'lat': 6.8398, 'lon': 81.8363, 'categories': [_adv, _fun], 'keywords': ['arugam']},
-    'Pasikuda': {'lat': 7.9274, 'lon': 81.5612, 'categories': [_fun], 'keywords': ['pasikuda', 'passikudah']},
-    'Batticaloa': {'lat': 7.7102, 'lon': 81.6924, 'categories': [_fun, _rel], 'keywords': ['batticaloa']},
-    'Trincomalee': {'lat': 8.5874, 'lon': 81.2152, 'categories': [_fun, _adv, _rel], 'keywords': ['trincomalee']},
-    'Nilaveli': {'lat': 8.6900, 'lon': 81.1900, 'categories': [_fun, _adv], 'keywords': ['nilaveli']},
+    'Kataragama': {
+      'lat': 6.4137,
+      'lon': 81.3350,
+      'categories': [_rel],
+      'keywords': ['kataragama']
+    },
+    'Tissamaharama': {
+      'lat': 6.2833,
+      'lon': 81.2833,
+      'categories': [_rel, _fun],
+      'keywords': ['tissamaharama', 'tissa']
+    },
+    'Yala National Park': {
+      'lat': 6.3728,
+      'lon': 81.5219,
+      'categories': [_fun, _adv],
+      'keywords': ['yala']
+    },
+    'Arugam Bay': {
+      'lat': 6.8398,
+      'lon': 81.8363,
+      'categories': [_adv, _fun],
+      'keywords': ['arugam']
+    },
+    'Pasikuda': {
+      'lat': 7.9274,
+      'lon': 81.5612,
+      'categories': [_fun],
+      'keywords': ['pasikuda', 'passikudah']
+    },
+    'Batticaloa': {
+      'lat': 7.7102,
+      'lon': 81.6924,
+      'categories': [_fun, _rel],
+      'keywords': ['batticaloa']
+    },
+    'Trincomalee': {
+      'lat': 8.5874,
+      'lon': 81.2152,
+      'categories': [_fun, _adv, _rel],
+      'keywords': ['trincomalee']
+    },
+    'Nilaveli': {
+      'lat': 8.6900,
+      'lon': 81.1900,
+      'categories': [_fun, _adv],
+      'keywords': ['nilaveli']
+    },
     // North & North-west
-    'Jaffna': {'lat': 9.6615, 'lon': 80.0255, 'categories': [_rel, _fun], 'keywords': ['jaffna']},
-    'Kalpitiya': {'lat': 8.2333, 'lon': 79.7667, 'categories': [_adv, _fun], 'keywords': ['kalpitiya']},
-    'Wilpattu National Park': {'lat': 8.4568, 'lon': 80.0408, 'categories': [_fun, _adv], 'keywords': ['wilpattu']},
+    'Jaffna': {
+      'lat': 9.6615,
+      'lon': 80.0255,
+      'categories': [_rel, _fun],
+      'keywords': ['jaffna']
+    },
+    'Kalpitiya': {
+      'lat': 8.2333,
+      'lon': 79.7667,
+      'categories': [_adv, _fun],
+      'keywords': ['kalpitiya']
+    },
+    'Wilpattu National Park': {
+      'lat': 8.4568,
+      'lon': 80.0408,
+      'categories': [_fun, _adv],
+      'keywords': ['wilpattu']
+    },
     // Cultural triangle
-    'Anuradhapura': {'lat': 8.3114, 'lon': 80.4037, 'categories': [_rel], 'keywords': ['anuradhapura']},
-    'Mihintale': {'lat': 8.3500, 'lon': 80.5117, 'categories': [_rel], 'keywords': ['mihintale']},
-    'Sigiriya': {'lat': 7.9570, 'lon': 80.7603, 'categories': [_rel, _adv], 'keywords': ['sigiriya']},
-    'Dambulla Cave Temple': {'lat': 7.8675, 'lon': 80.6517, 'categories': [_rel], 'keywords': ['dambulla']},
-    'Polonnaruwa': {'lat': 7.9403, 'lon': 81.0188, 'categories': [_rel], 'keywords': ['polonnaruwa']},
-    'Minneriya National Park': {'lat': 8.0333, 'lon': 80.9000, 'categories': [_fun, _adv], 'keywords': ['minneriya']},
+    'Anuradhapura': {
+      'lat': 8.3114,
+      'lon': 80.4037,
+      'categories': [_rel],
+      'keywords': ['anuradhapura']
+    },
+    'Mihintale': {
+      'lat': 8.3500,
+      'lon': 80.5117,
+      'categories': [_rel],
+      'keywords': ['mihintale']
+    },
+    'Sigiriya': {
+      'lat': 7.9570,
+      'lon': 80.7603,
+      'categories': [_rel, _adv],
+      'keywords': ['sigiriya']
+    },
+    'Dambulla Cave Temple': {
+      'lat': 7.8675,
+      'lon': 80.6517,
+      'categories': [_rel],
+      'keywords': ['dambulla']
+    },
+    'Polonnaruwa': {
+      'lat': 7.9403,
+      'lon': 81.0188,
+      'categories': [_rel],
+      'keywords': ['polonnaruwa']
+    },
+    'Minneriya National Park': {
+      'lat': 8.0333,
+      'lon': 80.9000,
+      'categories': [_fun, _adv],
+      'keywords': ['minneriya']
+    },
     // Hill country & interior
-    'Temple of the Tooth Kandy': {'lat': 7.2936, 'lon': 80.6413, 'categories': [_rel], 'keywords': ['kandy', 'temple of the tooth']},
-    'Knuckles Mountain Range': {'lat': 7.4667, 'lon': 80.7833, 'categories': [_adv], 'keywords': ['knuckles']},
-    'Nuwara Eliya': {'lat': 6.9497, 'lon': 80.7891, 'categories': [_fun, _adv], 'keywords': ['nuwara eliya']},
-    'Horton Plains': {'lat': 6.8009, 'lon': 80.8117, 'categories': [_adv], 'keywords': ['horton']},
-    'Ella': {'lat': 6.8667, 'lon': 81.0466, 'categories': [_adv, _fun], 'keywords': ['ella']},
-    'Haputale': {'lat': 6.7667, 'lon': 80.9500, 'categories': [_adv, _fun], 'keywords': ['haputale']},
-    "Adam's Peak (Sri Pada)": {'lat': 6.8096, 'lon': 80.4994, 'categories': [_adv, _rel], 'keywords': ["adam's peak", 'adams peak', 'sri pada']},
-    'Kitulgala': {'lat': 6.9890, 'lon': 80.4170, 'categories': [_adv], 'keywords': ['kitulgala']},
-    'Sinharaja Rainforest': {'lat': 6.4020, 'lon': 80.4040, 'categories': [_adv], 'keywords': ['sinharaja']},
-    'Udawalawe National Park': {'lat': 6.4744, 'lon': 80.8997, 'categories': [_fun, _adv], 'keywords': ['udawalawe']},
-    'Pinnawala Elephant Orphanage': {'lat': 7.3000, 'lon': 80.3850, 'categories': [_fun], 'keywords': ['pinnawala']},
-    'Kelaniya Raja Maha Vihara': {'lat': 6.9553, 'lon': 79.9220, 'categories': [_rel], 'keywords': ['kelaniya']},
+    'Temple of the Tooth Kandy': {
+      'lat': 7.2936,
+      'lon': 80.6413,
+      'categories': [_rel],
+      'keywords': ['kandy', 'temple of the tooth']
+    },
+    'Knuckles Mountain Range': {
+      'lat': 7.4667,
+      'lon': 80.7833,
+      'categories': [_adv],
+      'keywords': ['knuckles']
+    },
+    'Nuwara Eliya': {
+      'lat': 6.9497,
+      'lon': 80.7891,
+      'categories': [_fun, _adv],
+      'keywords': ['nuwara eliya']
+    },
+    'Horton Plains': {
+      'lat': 6.8009,
+      'lon': 80.8117,
+      'categories': [_adv],
+      'keywords': ['horton']
+    },
+    'Ella': {
+      'lat': 6.8667,
+      'lon': 81.0466,
+      'categories': [_adv, _fun],
+      'keywords': ['ella']
+    },
+    'Haputale': {
+      'lat': 6.7667,
+      'lon': 80.9500,
+      'categories': [_adv, _fun],
+      'keywords': ['haputale']
+    },
+    "Adam's Peak (Sri Pada)": {
+      'lat': 6.8096,
+      'lon': 80.4994,
+      'categories': [_adv, _rel],
+      'keywords': ["adam's peak", 'adams peak', 'sri pada']
+    },
+    'Kitulgala': {
+      'lat': 6.9890,
+      'lon': 80.4170,
+      'categories': [_adv],
+      'keywords': ['kitulgala']
+    },
+    'Sinharaja Rainforest': {
+      'lat': 6.4020,
+      'lon': 80.4040,
+      'categories': [_adv],
+      'keywords': ['sinharaja']
+    },
+    'Udawalawe National Park': {
+      'lat': 6.4744,
+      'lon': 80.8997,
+      'categories': [_fun, _adv],
+      'keywords': ['udawalawe']
+    },
+    'Pinnawala Elephant Orphanage': {
+      'lat': 7.3000,
+      'lon': 80.3850,
+      'categories': [_fun],
+      'keywords': ['pinnawala']
+    },
+    'Kelaniya Raja Maha Vihara': {
+      'lat': 6.9553,
+      'lon': 79.9220,
+      'categories': [_rel],
+      'keywords': ['kelaniya']
+    },
   };
 
   static const double _roadFactor = 1.35; // straight-line → approx. road km
@@ -308,7 +528,8 @@ class AIRecommendationService {
         .take(maxResults)
         .toList();
     if (chosen.length < minResults) {
-      chosen = rows.take(minResults).toList(); // sparse area → always give a few
+      chosen =
+          rows.take(minResults).toList(); // sparse area → always give a few
     }
     return chosen;
   }
@@ -318,7 +539,8 @@ class AIRecommendationService {
   /// Sri Lanka. Exposed for diagnostics / tests and UI previews.
   List<String> nearbyDestinationNames(TravelPreferences prefs,
           {int maxResults = 10, int minResults = 6}) =>
-      _getNearbyDestinations(prefs, maxResults: maxResults, minResults: minResults)
+      _getNearbyDestinations(prefs,
+              maxResults: maxResults, minResults: minResults)
           .map((r) => r['name'] as String)
           .toList();
 
@@ -439,14 +661,14 @@ class AIRecommendationService {
 
       double boosted(dynamic m) {
         final meta = (m['metadata'] as Map<String, dynamic>?) ?? {};
-        final text = (meta['text'] ?? meta['content'] ?? '')
-            .toString()
-            .toLowerCase();
+        final text =
+            (meta['text'] ?? meta['content'] ?? '').toString().toLowerCase();
         var bonus = 0.0;
         for (var idx = 0; idx < nearby.length; idx++) {
           final keywords = (nearby[idx]['keywords'] as List).cast<String>();
           if (keywords.any((kw) => text.contains(kw))) {
-            bonus += 0.08 * (1 - 0.5 * idx / n); // closer destinations weigh more
+            bonus +=
+                0.08 * (1 - 0.5 * idx / n); // closer destinations weigh more
           }
         }
         final score = (m['score'] as num?)?.toDouble() ?? 0.0;
@@ -489,9 +711,8 @@ class AIRecommendationService {
       cached = entry.data;
     }
 
-    final missing = locationNames
-        .where((loc) => !cached.containsKey(loc))
-        .toList();
+    final missing =
+        locationNames.where((loc) => !cached.containsKey(loc)).toList();
 
     final weatherResults = <String, Map<String, dynamic>>{...cached};
 
@@ -891,8 +1112,7 @@ EXACTLY 3 tier objects (Budget, Mid-range, Luxury), and each tier's "hotels"
 array must contain EXACTLY 3 hotels — 9 hotels total per destination.''';
 
     // Append location-aware rules only when a Sri Lankan district was chosen.
-    final systemPrompt =
-        baseSystemPrompt + (locationOn ? _locationRules : '');
+    final systemPrompt = baseSystemPrompt + (locationOn ? _locationRules : '');
 
     // Location prompt pieces — empty strings when outside Sri Lanka, so the
     // message is byte-for-byte unchanged in the original case.
@@ -925,8 +1145,7 @@ array must contain EXACTLY 3 hotels — 9 hotels total per destination.''';
             'the weather is elsewhere.'
         : '';
 
-    final userMessage =
-        '''
+    final userMessage = '''
 ## TRAVELLER PROFILE
 - Group type:          ${prefs.groupType.substring(0, 1).toUpperCase()}${prefs.groupType.substring(1)} (${prefs.groupSize} person(s))
 - Gender breakdown:    ${prefs.gender}
@@ -969,7 +1188,8 @@ and weigh the traveller's feedback history when it's available.''';
     final headers = OpenRouterConfig.authHeaders();
 
     final content = onPartialResponse != null
-        ? await _callOpenRouterStreaming(headers, requestBody, onPartialResponse)
+        ? await _callOpenRouterStreaming(
+            headers, requestBody, onPartialResponse)
         : await _callOpenRouterOnce(headers, requestBody);
 
     final parsed = _parseRecommendationContent(content);
@@ -1066,7 +1286,8 @@ and weigh the traveller's feedback history when it's available.''';
     RecommendationResponse resp,
     List<String> allowedNames,
   ) {
-    String norm(String s) => s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    String norm(String s) =>
+        s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
     final allowedNorm = allowedNames.map(norm).toList();
 
     bool isAllowed(String dest) {
@@ -1186,8 +1407,7 @@ and weigh the traveller's feedback history when it's available.''';
 
         try {
           final obj = jsonDecode(payload) as Map<String, dynamic>;
-          final delta =
-              obj['choices']?[0]?['delta']?['content'] as String?;
+          final delta = obj['choices']?[0]?['delta']?['content'] as String?;
           if (delta != null && delta.isNotEmpty) {
             buffer.write(delta);
             onPartialResponse(delta);
