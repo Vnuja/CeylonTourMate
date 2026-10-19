@@ -91,7 +91,7 @@ Return a JSON object with EXACTLY this structure (no markdown, no extra text, pu
 If you cannot identify the place, still return JSON but set name to "Unknown Place" and fill other fields with your best guess based on visible features.
 ''';
 
-  /// ── FIX: Convert any image format → JPEG bytes (same as notebook PIL approach) ──
+  /// ── FIX: Convert any image format → JPEG bytes (same as notebook PIL approach) --
   /// Runs on a background isolate so it doesn't block the UI thread.
   static Uint8List _convertToJpeg(Uint8List rawBytes) {
     // Decode whatever format the phone gives us (HEIC, PNG, JPEG, WEBP…)
