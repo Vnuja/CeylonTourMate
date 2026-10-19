@@ -49,7 +49,7 @@ class ChatProvider extends ChangeNotifier {
       '- 🍛 Local food & cuisine\n'
       '- 🚂 Travel packages & itineraries';
 
-  // ── Init (voice only — session loading happens via setUser) ─
+  // ── Init (voice only — session loading happens via setUser) ---
   Future<void> init() async {
     await _voiceService.init();
 
