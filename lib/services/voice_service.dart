@@ -19,6 +19,7 @@ class VoiceService {
   Function(String)? onSttError;
   Function()? onTtsDone;
 
+//Explain TTS and STT initialization
   Future<void> init() async {
     // ── TTS Setup ──────────────────────────────────────────
     await _tts.setLanguage('en-US');
@@ -138,6 +139,7 @@ class VoiceService {
   bool get sttAvailable => _sttAvailable;
   bool get isListening => _sttListening;
 
+  //Explain Speech-to-Text
   Future<void> startListening() async {
     if (!_sttAvailable) return;
 
