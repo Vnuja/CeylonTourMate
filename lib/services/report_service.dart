@@ -3,6 +3,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../models/travel_models.dart';
 
+//Create a report service class to generate a PDF report of the trip recommendations and preferences
 /// Builds a polished, branded PDF trip report — a cover page (trip
 /// snapshot), a preferences summary, a fully-styled card per destination
 /// (rank badge, stat grid, activities table, transport/entry fees, and all
