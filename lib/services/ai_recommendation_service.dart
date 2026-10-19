@@ -37,7 +37,7 @@ class AIRecommendationService {
 
   // ── Caches ─────────────────────────────────────────────────────────────────
   static final Map<String, _CacheEntry<Map<String, Map<String, dynamic>>>>
-  _weatherCache = {};
+      _weatherCache = {};
   static final Map<String, _CacheEntry<String>> _contextCache = {};
   static const Duration _weatherCacheTtl = Duration(hours: 3);
   static const Duration _contextCacheTtl = Duration(minutes: 30);
@@ -101,7 +101,12 @@ class AIRecommendationService {
       'Nuwara Eliya',
       'Arugam Bay',
     ],
-    'culture & cities': ['Colombo', 'Temple of the Tooth Kandy', 'Galle Fort', 'Jaffna'],
+    'culture & cities': [
+      'Colombo',
+      'Temple of the Tooth Kandy',
+      'Galle Fort',
+      'Jaffna'
+    ],
   };
 
   /// Resolves which of the 20 fixed locations are actually worth fetching
@@ -222,9 +227,8 @@ class AIRecommendationService {
       cached = entry.data;
     }
 
-    final missing = locationNames
-        .where((loc) => !cached.containsKey(loc))
-        .toList();
+    final missing =
+        locationNames.where((loc) => !cached.containsKey(loc)).toList();
 
     final weatherResults = <String, Map<String, dynamic>>{...cached};
 
@@ -470,8 +474,7 @@ in "travel_tips". Every recommendation's "hotel_options" array must contain
 EXACTLY 3 tier objects (Budget, Mid-range, Luxury), and each tier's "hotels"
 array must contain EXACTLY 3 hotels — 9 hotels total per destination.''';
 
-    final userMessage =
-        '''
+    final userMessage = '''
 ## TRAVELLER PROFILE
 - Group type:          ${prefs.groupType.substring(0, 1).toUpperCase()}${prefs.groupType.substring(1)} (${prefs.groupSize} person(s))
 - Gender breakdown:    ${prefs.gender}
@@ -521,7 +524,8 @@ and weigh the traveller's feedback history when it's available.''';
     };
 
     final content = onPartialResponse != null
-        ? await _callOpenRouterStreaming(headers, requestBody, onPartialResponse)
+        ? await _callOpenRouterStreaming(
+            headers, requestBody, onPartialResponse)
         : await _callOpenRouterOnce(headers, requestBody);
 
     return _parseRecommendationContent(content);
@@ -583,8 +587,7 @@ and weigh the traveller's feedback history when it's available.''';
 
         try {
           final obj = jsonDecode(payload) as Map<String, dynamic>;
-          final delta =
-              obj['choices']?[0]?['delta']?['content'] as String?;
+          final delta = obj['choices']?[0]?['delta']?['content'] as String?;
           if (delta != null && delta.isNotEmpty) {
             buffer.write(delta);
             onPartialResponse(delta);
